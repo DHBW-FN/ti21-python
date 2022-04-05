@@ -57,7 +57,3 @@ jobs:
         path: reports/tests/*.xml
         reporter: java-junit
         fail-on-error: true
-    - name: Generate Badges
-      run: |
-        genbadge tests -i ./reports/tests/test_report.xml -o ./reports/badges/test-badge.svg
-        genbadge coverage -i ./reports/coverage/coverage.xml -o ./reports/badges/coverage-badge.svg
