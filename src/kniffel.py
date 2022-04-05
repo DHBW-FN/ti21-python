@@ -228,6 +228,36 @@ class UpperCategory(Category):
         return self.category_value * self.dice.count(self.category_value)
 
 
+class LowerCategory(Category):
+    """
+    Class for modelling a lower category
+    """
+    def __init__(self, name: str):
+        super().__init__(name)
+
+
+class ThreeOfAKind(LowerCategory):
+
+    def __init__(self, name: str):
+        super().__init__(name)
+
+    def evaluate(self):
+        for i in range(1, 6):
+            if self.dice.count(i) >= 3:
+                return i * 3
+
+
+class FourOfAKind(LowerCategory):
+
+    def __init__(self, name: str):
+        super().__init__(name)
+
+    def evaluate(self):
+        for i in range(1, 6):
+            if self.dice.count(i) >= 4:
+                return i * 4
+
+
 def main():
     kniffel = Kniffel(2)
     print(kniffel.active_player.block.upper.evaluate())
