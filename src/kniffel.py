@@ -8,6 +8,7 @@ class Dice:
     """
     Class for modelling a dice
     """
+
     def __init__(self):
         self.dice = [Die(), Die(), Die(), Die(), Die()]
 
@@ -33,6 +34,7 @@ class Die:
     """
     Class for modelling a die
     """
+
     def __init__(self):
         self.value = 0
         self.saved = False
@@ -52,6 +54,7 @@ class Kniffel:
     """
     Class for modelling a Kniffel game
     """
+
     def __init__(self, number_of_players: int):
         self.players = []
         for i in range(number_of_players):
@@ -69,6 +72,7 @@ class Player:
     """
     Class for modelling a player
     """
+
     def __init__(self, username: str):
         self.username = username
         self.block = Block()
@@ -91,6 +95,7 @@ class Block:
     """
     Class for modelling a block
     """
+
     def __init__(self):
         self.upper = UpperBlock()
         self.lower = LowerBlock()
@@ -103,6 +108,7 @@ class UpperBlock:
     """
     Class for modelling the upper block
     """
+
     def __init__(self):
         self.ones = UpperCategory("Ones", 1)
         self.twos = UpperCategory("Twos", 2)
@@ -112,13 +118,20 @@ class UpperBlock:
         self.sixes = UpperCategory("Sixes", 6)
 
     def evaluate(self):
-        return 1
+        total = 0
+        for value in vars(self).items():
+            if isinstance(value, UpperCategory):
+                total += value.evaluate()
+        if total >= 63:
+            return total + 35
+        return total
 
 
 class LowerBlock:
     """
     Class for modelling the lower block
     """
+
     def __init__(self):
         self.three_of_a_kind = Dice()
         self.four_of_a_kind = Dice()
@@ -129,13 +142,18 @@ class LowerBlock:
         self.chance = Dice()
 
     def evaluate(self):
-        return 1
+        total = 0
+        for value in vars(self).items():
+            if isinstance(value, UpperCategory):
+                total += value.evaluate()
+        return total
 
 
 class Category:
     """
     Class for modelling a category
     """
+
     def __init__(self, name: str):
         self.name = name
         self.dice = Dice()
@@ -148,6 +166,7 @@ class UpperCategory(Category):
     """
     Class for modelling an upper category
     """
+
     def __init__(self, name: str, category_value: int = 0):
         super().__init__(name)
         self.category_value = category_value
@@ -158,10 +177,9 @@ class UpperCategory(Category):
 
 def main():
     kniffel = Kniffel(2)
-    kniffel.roll()
+    print(kniffel.active_player.block.upper.evaluate())
     for die in kniffel.active_player.dice.dice:
         print(die.value)
-
 
 
 if __name__ == "__main__":
