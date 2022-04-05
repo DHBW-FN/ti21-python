@@ -19,6 +19,12 @@ class Dice:
                 occurrences += 1
         return occurrences
 
+    def includes(self, value: int):
+        for die in self.dice:
+            if die.value == value:
+                return True
+        return False
+
     def roll(self):
         for die in self.dice:
             die.roll()
@@ -67,6 +73,10 @@ class Kniffel:
     def save(self, die_index: int):
         self.active_player.save(die_index)
 
+    def submit(self, category_index: int):
+        self.active_player.submit(category_index)
+        self.active_player = self.players[(self.players.index(self.active_player) + 1) % len(self.players)]
+
 
 class Player:
     """
@@ -90,6 +100,9 @@ class Player:
     def save(self, die_index: int):
         self.dice.save(die_index)
 
+    def submit(self, category_index: int):
+        self.block.submit(self.dice, category_index)
+
 
 class Block:
     """
@@ -102,6 +115,12 @@ class Block:
 
     def evaluate(self):
         return self.upper.evaluate() + self.lower.evaluate()
+
+    def submit(self, dice: Dice, category_index: int):
+        if category_index <= 6:
+            self.upper.submit(dice, category_index)
+        else:
+            self.lower.submit(dice, category_index)
 
 
 class UpperBlock:
@@ -126,6 +145,22 @@ class UpperBlock:
             return total + 35
         return total
 
+    def submit(self, dice: Dice, category_index: int):
+        if category_index == 1:
+            self.ones.submit(dice)
+        elif category_index == 2:
+            self.twos.submit(dice)
+        elif category_index == 3:
+            self.threes.submit(dice)
+        elif category_index == 4:
+            self.fours.submit(dice)
+        elif category_index == 5:
+            self.fives.submit(dice)
+        elif category_index == 6:
+            self.sixes.submit(dice)
+        else:
+            raise Exception("Invalid category index")
+
 
 class LowerBlock:
     """
@@ -133,13 +168,13 @@ class LowerBlock:
     """
 
     def __init__(self):
-        self.three_of_a_kind = Dice()
-        self.four_of_a_kind = Dice()
-        self.full_house = Dice()
-        self.small_straight = Dice()
-        self.large_straight = Dice()
-        self.kniffel = Dice()
-        self.chance = Dice()
+        self.three_of_a_kind = Category("Three of a kind")
+        self.four_of_a_kind = Category("Four of a kind")
+        self.full_house = Category("Full house")
+        self.small_straight = Category("Small straight")
+        self.large_straight = Category("Large straight")
+        self.kniffel = Category("Kniffel")
+        self.chance = Category("Chance")
 
     def evaluate(self):
         total = 0
@@ -147,6 +182,24 @@ class LowerBlock:
             if isinstance(value, UpperCategory):
                 total += value.evaluate()
         return total
+
+    def submit(self, dice: Dice, category_index: int):
+        if category_index == 7:
+            self.three_of_a_kind.submit(dice)
+        elif category_index == 8:
+            self.four_of_a_kind.submit(dice)
+        elif category_index == 9:
+            self.full_house.submit(dice)
+        elif category_index == 10:
+            self.small_straight.submit(dice)
+        elif category_index == 11:
+            self.large_straight.submit(dice)
+        elif category_index == 12:
+            self.kniffel.submit(dice)
+        elif category_index == 13:
+            self.chance.submit(dice)
+        else:
+            raise Exception("Invalid category index")
 
 
 class Category:
