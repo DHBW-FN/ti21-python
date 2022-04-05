@@ -48,4 +48,12 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Test with pytest
       run: |
-        pytest
+        pytest --junitxml=/reports/test_report.xml
+    - name: Test Reporter
+      uses: dorny/test-reporter@v1.5.0
+      if: always()
+      with:
+        name: Maven Tests
+        path: reports/*.xml
+        reporter: java-junit
+        fail-on-error: true
