@@ -48,12 +48,12 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Test with pytest
       run: |
-        pytest --junitxml=./reports/test_report.xml --cov-report term --cov=src/ --cov-report xml:./reports/coverage.xml
+        pytest --junitxml=./reports/tests/test_report.xml --cov-report term --cov=src/ --cov-report xml:./reports/cov/coverage.xml
     - name: Test Reporter
       uses: dorny/test-reporter@v1.5.0
       if: always()
       with:
         name: Pytest Tests
-        path: reports/*.xml
+        path: reports/tests/*.xml
         reporter: java-junit
         fail-on-error: true
