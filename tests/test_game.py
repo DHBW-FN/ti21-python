@@ -4,7 +4,7 @@ from unittest import TestCase
 
 import unittest
 
-from src.game import Dice
+from kniffel.game import Dice
 
 
 class TestDice(TestCase):
