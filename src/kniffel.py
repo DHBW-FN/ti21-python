@@ -4,6 +4,30 @@ Modelling and executing Kniffel
 import random
 
 
+class Dice:
+    def __init__(self):
+        self.dice = [Die()] * 5
+
+    def count(self, value: int):
+        for die in self.dice:
+            if die.value == value:
+                return 1
+
+    def roll(self):
+        for die in self.dice:
+            if not die.save:
+                die.roll()
+
+
+class Die:
+    def __init__(self):
+        self.value = 0
+        self.save = False
+
+    def roll(self):
+        self.value = random.randint(1, 6)
+
+
 class Kniffel:
     def __init__(self, number_of_players: int):
         self.players = []
@@ -15,6 +39,13 @@ class Kniffel:
 class Player:
     def __init__(self, username: str):
         self.username = username
+        self.block = Block()
+        self.dice = Dice()
+        self.rolls = 0
+
+    def roll(self):
+        self.dice.roll()
+        self.rolls += 1
 
 
 class Block:
@@ -28,12 +59,12 @@ class Block:
 
 class UpperBlock:
     def __init__(self):
-        self.ones = 0
-        self.twos = 0
-        self.threes = 0
-        self.fours = 0
-        self.fives = 0
-        self.sixes = 0
+        self.ones = UpperCategory("Ones", 1)
+        self.twos = UpperCategory("Twos", 2)
+        self.threes = UpperCategory("Threes", 3)
+        self.fours = UpperCategory("Fours", 4)
+        self.fives = UpperCategory("Fives", 5)
+        self.sixes = UpperCategory("Sixes", 6)
 
     def evaluate(self):
         return 1
@@ -41,35 +72,34 @@ class UpperBlock:
 
 class LowerBlock:
     def __init__(self):
-        self.three_of_a_kind = 0
-        self.four_of_a_kind = 0
-        self.full_house = 0
-        self.small_straight = 0
-        self.large_straight = 0
-        self.yahtzee = 0
-        self.chance = 0
+        self.three_of_a_kind = Dice()
+        self.four_of_a_kind = Dice()
+        self.full_house = Dice()
+        self.small_straight = Dice()
+        self.large_straight = Dice()
+        self.kniffel = Dice()
+        self.chance = Dice()
 
     def evaluate(self):
         return 1
 
 
-class Dice:
-    def __init__(self):
-        self.dice = [Die()] * 5
+class Category:
+    def __init__(self, name: str):
+        self.name = name
+        self.dice = Dice()
 
-    def count(self, value: int):
-        for die in self.dice:
-            if die.value == value:
-                return 1
+    def submit(self, dice: Dice):
+        self.dice = dice
 
 
-class Die:
-    def __init__(self):
-        self.value = 0
-        self.save = False
+class UpperCategory(Category):
+    def __init__(self, name: str, category_value: int = 0):
+        super().__init__(name)
+        self.category_value = category_value
 
-    def roll(self):
-        self.value = random.randint(1, 6)
+    def evaluate(self):
+        return self.category_value * self.dice.count(self.category_value)
 
 
 def main():
