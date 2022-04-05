@@ -1,6 +1,8 @@
 """
 Modelling and executing Kniffel
 """
+import sys
+
 from numpy import random
 
 
@@ -28,9 +30,10 @@ class Dice:
     def roll(self):
         for die in self.dice:
             die.roll()
+        print("Rolled: " + str([die.value for die in self.dice]))
 
     def save(self, index: int):
-        self.dice[index].save()
+        self.dice[index + 1].save()
 
     def un_save(self, index: int):
         self.dice[index].un_save()
@@ -56,7 +59,20 @@ class Die:
         self.saved = False
 
 
-class Kniffel:
+def show_help():
+    print(
+        "Commands:\n"
+        "[0] roll: Roll the dice\n"
+        "[1] save <die_index>: Save the die with the given index\n"
+        "[2] submit <category_index>: Submit the score for the given category\n"
+        "[3] help: Show this help message\n"
+        "[4] score: Show the current game state\n"
+        "[5] dice: Show the current dice state\n"
+        "[9] exit: Exit the game\n"
+    )
+
+
+class Game:
     """
     Class for modelling a Kniffel game
     """
@@ -75,7 +91,44 @@ class Kniffel:
 
     def submit(self, category_index: int):
         self.active_player.submit(category_index)
+        self.end_turn()
+
+    def end_turn(self):
         self.active_player = self.players[(self.players.index(self.active_player) + 1) % len(self.players)]
+        self.active_player.turns += 1
+
+    def show_dice(self):
+        print("Dice: " + str([die.value for die in self.active_player.dice.dice]))
+        print("Saved: " + str([die.saved for die in self.active_player.dice.dice]))
+
+    def show_score(self):
+        print("Score:")
+        for player in self.players:
+            print(player.username + ": " + str(player.block.evaluate()))
+
+    def process_command(self, command_str: str):
+        command = command_str.split()[0]
+        arguments = []
+        if len(command_str.split()) > 1:
+            arguments = command_str.split()[1:]
+
+        match command:
+            case "roll":
+                self.roll()
+            case "save":
+                self.save(int(arguments[0]))
+            case "submit":
+                self.submit(int(arguments[0]))
+            case "help":
+                show_help()
+            case "score":
+                self.show_score()
+            case "dice":
+                self.show_dice()
+            case "exit":
+                sys.exit(0)
+            case _:
+                print("Unknown command: " + command)
 
 
 class Player:
@@ -87,6 +140,7 @@ class Player:
         self.username = username
         self.block = Block()
         self.dice = Dice()
+        self.turns = 0
         self.rolls = 0
 
     def roll(self):
@@ -94,14 +148,14 @@ class Player:
             self.dice.roll()
             self.rolls += 1
             return
-        else:
-            raise Exception("You have already rolled 3 times")
+        raise Exception("You have already rolled 3 times")
 
     def save(self, die_index: int):
         self.dice.save(die_index)
 
     def submit(self, category_index: int):
         self.block.submit(self.dice, category_index)
+        self.rolls = 0
 
 
 class Block:
@@ -146,20 +200,21 @@ class UpperBlock:
         return total
 
     def submit(self, dice: Dice, category_index: int):
-        if category_index == 1:
-            self.ones.submit(dice)
-        elif category_index == 2:
-            self.twos.submit(dice)
-        elif category_index == 3:
-            self.threes.submit(dice)
-        elif category_index == 4:
-            self.fours.submit(dice)
-        elif category_index == 5:
-            self.fives.submit(dice)
-        elif category_index == 6:
-            self.sixes.submit(dice)
-        else:
-            raise Exception("Invalid category index")
+        match category_index:
+            case 1:
+                self.ones.submit(dice)
+            case 2:
+                self.twos.submit(dice)
+            case 3:
+                self.threes.submit(dice)
+            case 4:
+                self.fours.submit(dice)
+            case 5:
+                self.fives.submit(dice)
+            case 6:
+                self.sixes.submit(dice)
+            case _:
+                raise Exception("Invalid category index")
 
 
 class LowerBlock:
@@ -168,13 +223,13 @@ class LowerBlock:
     """
 
     def __init__(self):
-        self.three_of_a_kind = Category("Three of a kind")
-        self.four_of_a_kind = Category("Four of a kind")
-        self.full_house = Category("Full house")
-        self.small_straight = Category("Small straight")
-        self.large_straight = Category("Large straight")
-        self.kniffel = Category("Kniffel")
-        self.chance = Category("Chance")
+        self.three_of_a_kind = ThreeOfAKind("Three of a kind")
+        self.four_of_a_kind = FourOfAKind("Four of a kind")
+        self.full_house = FullHouse("Full house")
+        self.small_straight = SmallStraight("Small straight")
+        self.large_straight = LargeStraight("Large straight")
+        self.kniffel = Kniffel("Kniffel")
+        self.chance = Chance("Chance")
 
     def evaluate(self):
         total = 0
@@ -199,7 +254,7 @@ class LowerBlock:
                 self.kniffel.submit(dice)
             case 7:
                 self.chance.submit(dice)
-            case default:
+            case _:
                 raise Exception("Invalid category index")
 
 
@@ -233,14 +288,9 @@ class LowerCategory(Category):
     """
     Class for modelling a lower category
     """
-    def __init__(self, name: str):
-        super().__init__(name)
 
 
 class ThreeOfAKind(LowerCategory):
-
-    def __init__(self, name: str):
-        super().__init__(name)
 
     def evaluate(self):
         for i in range(1, 6):
@@ -254,9 +304,6 @@ class ThreeOfAKind(LowerCategory):
 
 class FourOfAKind(LowerCategory):
 
-    def __init__(self, name: str):
-        super().__init__(name)
-
     def evaluate(self):
         for i in range(1, 6):
             if self.dice.count(i) >= 4:
@@ -267,11 +314,64 @@ class FourOfAKind(LowerCategory):
         return 0
 
 
+class FullHouse(LowerCategory):
+
+    def evaluate(self):
+        for i in range(1, 6):
+            if self.dice.count(i) == 3:
+                for j in range(1, 6):
+                    if self.dice.count(j) == 2 & i != j:
+                        return 25
+        return 0
+
+
+class SmallStraight(LowerCategory):
+
+    def evaluate(self):
+        for i in range(1, 6):
+            if self.dice.count(i) == 1:
+                for j in range(i + 1, i + 4):
+                    if self.dice.count(j) == 1:
+                        return 30
+        return 0
+
+
+class LargeStraight(LowerCategory):
+
+    def evaluate(self):
+        for i in range(1, 6):
+            if self.dice.count(i) == 1:
+                for j in range(i + 1, i + 5):
+                    if self.dice.count(j) == 1:
+                        return 40
+        return 0
+
+
+class Kniffel(LowerCategory):
+
+    def evaluate(self):
+        for i in range(1, 6):
+            if self.dice.count(i) == 5:
+                return 50
+        return 0
+
+
+class Chance(LowerCategory):
+
+    def evaluate(self):
+        total = 0
+        for i in range(5):
+            total += self.dice.dice[i].value
+        return total
+
+
 def main():
-    kniffel = Kniffel(2)
-    print(kniffel.active_player.block.upper.evaluate())
-    for die in kniffel.active_player.dice.dice:
-        print(die.value)
+    game = Game(2)
+    while True:
+        try:
+            game.process_command(input("Enter command: "))
+        except ValueError as error:
+            print("\033[93m[ERROR] - " + str(error) + "\033[0m")
 
 
 if __name__ == "__main__":
