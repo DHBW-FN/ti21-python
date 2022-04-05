@@ -1,3 +1,5 @@
+# pylint: disable=C
+# pylint: disable=protected-access
 from unittest import TestCase
 
 
