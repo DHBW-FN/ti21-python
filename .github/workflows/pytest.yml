@@ -44,11 +44,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest pytest-cov
+        pip install pytest pytest-cov coverage genbadge[tests]
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Test with pytest
       run: |
-        pytest --junitxml=./reports/tests/test_report.xml --cov-report term --cov=src/ --cov-report xml:./reports/cov/coverage.xml
+        pytest --junitxml=./reports/tests/test_report.xml --cov-report=term --cov=src/ --cov-report=xml:./reports/cov/coverage.xml
     - name: Test Reporter
       uses: dorny/test-reporter@v1.5.0
       if: always()
@@ -57,3 +57,7 @@ jobs:
         path: reports/tests/*.xml
         reporter: java-junit
         fail-on-error: true
+    - name: Generate Badges
+      run: |
+        genbadge tests -i ./reports/tests/test_report.xml -o ./reports/badges/tests-badge.svg
+        genbadge coverage -i ./reports/cov/coverage.xml -o ./reports/badges/coverage-badge.svg
