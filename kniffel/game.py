@@ -5,6 +5,13 @@ import sys
 
 from numpy import random
 
+from kniffel.exceptions import InvalidInputError, InvalidArgumentError, InvalidIndexError, InvalidCommandError
+
+
+def display_message(message):
+    print("\033[93m" + str(message) + "\033[0m")
+    # input("Press enter to continue...")
+
 
 class Dice:
     """
@@ -13,6 +20,9 @@ class Dice:
 
     def __init__(self):
         self.dice = [Die(), Die(), Die(), Die(), Die()]
+
+    def __str__(self):
+        return str([die.value for die in self.dice])
 
     def count(self, value: int):
         occurrences = 0
@@ -33,9 +43,13 @@ class Dice:
         print("Rolled: " + str([die.value for die in self.dice]))
 
     def save(self, index: int):
-        self.dice[index + 1].save()
+        if index > len(self.dice) or index < 1:
+            raise InvalidArgumentError()
+        self.dice[index - 1].save()
 
     def un_save(self, index: int):
+        if index > len(self.dice):
+            raise InvalidArgumentError()
         self.dice[index].un_save()
 
 
@@ -45,7 +59,7 @@ class Die:
     """
 
     def __init__(self):
-        self.value = 0
+        self.value = random.randint(1, 6)
         self.saved = False
 
     def roll(self):
@@ -53,6 +67,7 @@ class Die:
             self.value = random.randint(1, 6)
 
     def save(self):
+        print("Saved: " + str(self.value))
         self.saved = True
 
     def un_save(self):
@@ -63,7 +78,7 @@ def show_help():
     print(
         "Commands:\n"
         "[0] roll: Roll the dice\n"
-        "[1] save <die_index>: Save the die with the given index\n"
+        "[1] save <die_index>: Save the die with the given index[1-6]\n"
         "[2] submit <category_index>: Submit the score for the given category\n"
         "[3] help: Show this help message\n"
         "[4] score: Show the current game state\n"
@@ -96,6 +111,7 @@ class Game:
     def end_turn(self):
         self.active_player = self.players[(self.players.index(self.active_player) + 1) % len(self.players)]
         self.active_player.turns += 1
+        self.roll()
 
     def show_dice(self):
         print("Dice: " + str([die.value for die in self.active_player.dice.dice]))
@@ -107,17 +123,21 @@ class Game:
             print(player.username + ": " + str(player.block.evaluate()))
 
     def process_command(self, command_str: str):
+        if command_str == "":
+            raise InvalidInputError()
         command = command_str.split()[0]
-        arguments = []
-        if len(command_str.split()) > 1:
-            arguments = command_str.split()[1:]
+        arguments = command_str.split()[1:]
 
         match command:
             case "roll":
                 self.roll()
             case "save":
+                if not arguments:
+                    raise InvalidInputError()
                 self.save(int(arguments[0]))
             case "submit":
+                if not arguments:
+                    raise InvalidInputError()
                 self.submit(int(arguments[0]))
             case "help":
                 show_help()
@@ -141,21 +161,21 @@ class Player:
         self.block = Block()
         self.dice = Dice()
         self.turns = 0
-        self.rolls = 0
+        self.rolls = 1
 
     def roll(self):
         if self.rolls < 3:
             self.dice.roll()
             self.rolls += 1
             return
-        raise Exception("You have already rolled 3 times")
+        raise InvalidCommandError("You have already rolled 3 times")
 
     def save(self, die_index: int):
         self.dice.save(die_index)
 
     def submit(self, category_index: int):
         self.block.submit(self.dice, category_index)
-        self.rolls = 0
+        self.rolls = 1
 
 
 class Block:
@@ -214,7 +234,7 @@ class UpperBlock:
             case 6:
                 self.sixes.submit(dice)
             case _:
-                raise Exception("Invalid category index")
+                raise InvalidIndexError()
 
 
 class LowerBlock:
@@ -255,7 +275,7 @@ class LowerBlock:
             case 7:
                 self.chance.submit(dice)
             case _:
-                raise Exception("Invalid category index")
+                raise InvalidIndexError()
 
 
 class Category:
@@ -269,6 +289,10 @@ class Category:
 
     def submit(self, dice: Dice):
         self.dice = dice
+        print("Submitted " + str(dice) + " to " + self.name + " for a score of " + str(self.evaluate()))
+
+    def evaluate(self):
+        pass
 
 
 class UpperCategory(Category):
@@ -371,7 +395,15 @@ def main():
         try:
             game.process_command(input("Enter command: "))
         except ValueError as error:
-            print("\033[93m[ERROR] - " + str(error) + "\033[0m")
+            display_message(error)
+        except InvalidInputError:
+            display_message("Invalid input.")
+        except InvalidArgumentError:
+            display_message("Invalid argument.")
+        except InvalidIndexError:
+            display_message("Invalid index.")
+        except InvalidCommandError as error:
+            display_message(error)
 
 
 if __name__ == "__main__":
