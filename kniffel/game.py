@@ -4,6 +4,7 @@ Modelling and executing Kniffel
 import sys
 
 from numpy import random
+from prettytable import PrettyTable
 
 from kniffel.exceptions import InvalidInputError, InvalidArgumentError, InvalidIndexError, InvalidCommandError
 
@@ -59,7 +60,7 @@ class Die:
     """
 
     def __init__(self):
-        self.value = random.randint(1, 6)
+        self.value = 0
         self.saved = False
 
     def roll(self):
@@ -97,6 +98,8 @@ class Game:
         for i in range(number_of_players):
             self.players.append(Player("Player " + str(i + 1)))
         self.active_player = self.players[0]
+        self.active_player.roll()
+        self.active_player.rolls = 1
 
     def roll(self):
         self.active_player.roll()
@@ -111,6 +114,8 @@ class Game:
     def end_turn(self):
         self.active_player = self.players[(self.players.index(self.active_player) + 1) % len(self.players)]
         self.active_player.turns += 1
+        print("*" * 20)
+        print(self.active_player.username + " is now playing")
         self.roll()
 
     def show_dice(self):
@@ -121,6 +126,25 @@ class Game:
         print("Score:")
         for player in self.players:
             print(player.username + ": " + str(player.block.evaluate()))
+
+        my_table = PrettyTable(["Id", "Categories"] + [player.username for player in self.players])
+        my_table.add_row([self.active_player.block.upper.ones.index, "Ones"] + [str(player.block.upper.ones.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.upper.twos.index, "Twos"] + [str(player.block.upper.twos.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.upper.threes.index, "Threes"] + [str(player.block.upper.threes.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.upper.fours.index, "Fours"] + [str(player.block.upper.fours.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.upper.fives.index, "Fives"] + [str(player.block.upper.fives.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.upper.sixes.index, "Sixes"] + [str(player.block.upper.sixes.evaluate()) for player in self.players])
+        my_table.add_row(["==", "Total Upper"] + [str(player.block.upper.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.lower.three_of_a_kind.index, "Three of a kind"] + [str(player.block.lower.three_of_a_kind.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.lower.four_of_a_kind.index, "Four of a kind"] + [str(player.block.lower.four_of_a_kind.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.lower.full_house.index, "Full house"] + [str(player.block.lower.full_house.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.lower.small_straight.index, "Small straight"] + [str(player.block.lower.small_straight.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.lower.large_straight.index, "Large straight"] + [str(player.block.lower.large_straight.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.lower.kniffel.index, "Kniffel"] + [str(player.block.lower.kniffel.evaluate()) for player in self.players])
+        my_table.add_row([self.active_player.block.lower.chance.index, "Chance"] + [str(player.block.lower.chance.evaluate()) for player in self.players])
+        my_table.add_row(["==", "Total Lower"] + [str(player.block.lower.evaluate()) for player in self.players])
+        my_table.add_row(["==", "Total"] + [str(player.block.evaluate()) for player in self.players])
+        print(my_table)
 
     def process_command(self, command_str: str):
         if command_str == "":
@@ -175,6 +199,7 @@ class Player:
 
     def submit(self, category_index: int):
         self.block.submit(self.dice, category_index)
+        self.dice = Dice()
         self.rolls = 1
 
 
@@ -203,12 +228,12 @@ class UpperBlock:
     """
 
     def __init__(self):
-        self.ones = UpperCategory("Ones", 1)
-        self.twos = UpperCategory("Twos", 2)
-        self.threes = UpperCategory("Threes", 3)
-        self.fours = UpperCategory("Fours", 4)
-        self.fives = UpperCategory("Fives", 5)
-        self.sixes = UpperCategory("Sixes", 6)
+        self.ones = UpperCategory(1, "Ones", 1)
+        self.twos = UpperCategory(2, "Twos", 2)
+        self.threes = UpperCategory(3, "Threes", 3)
+        self.fours = UpperCategory(4, "Fours", 4)
+        self.fives = UpperCategory(5, "Fives", 5)
+        self.sixes = UpperCategory(6, "Sixes", 6)
 
     def evaluate(self):
         total = 0
@@ -243,13 +268,13 @@ class LowerBlock:
     """
 
     def __init__(self):
-        self.three_of_a_kind = ThreeOfAKind("Three of a kind")
-        self.four_of_a_kind = FourOfAKind("Four of a kind")
-        self.full_house = FullHouse("Full house")
-        self.small_straight = SmallStraight("Small straight")
-        self.large_straight = LargeStraight("Large straight")
-        self.kniffel = Kniffel("Kniffel")
-        self.chance = Chance("Chance")
+        self.three_of_a_kind = ThreeOfAKind(7, "Three of a kind")
+        self.four_of_a_kind = FourOfAKind(8, "Four of a kind")
+        self.full_house = FullHouse(9, "Full house")
+        self.small_straight = SmallStraight(10, "Small straight")
+        self.large_straight = LargeStraight(11, "Large straight")
+        self.kniffel = Kniffel(12, "Kniffel")
+        self.chance = Chance(13, "Chance")
 
     def evaluate(self):
         total = 0
@@ -260,19 +285,19 @@ class LowerBlock:
 
     def submit(self, dice: Dice, category_index: int):
         match category_index:
-            case 1:
-                self.three_of_a_kind.submit(dice)
-            case 2:
-                self.four_of_a_kind.submit(dice)
-            case 3:
-                self.full_house.submit(dice)
-            case 4:
-                self.small_straight.submit(dice)
-            case 5:
-                self.large_straight.submit(dice)
-            case 6:
-                self.kniffel.submit(dice)
             case 7:
+                self.three_of_a_kind.submit(dice)
+            case 8:
+                self.four_of_a_kind.submit(dice)
+            case 9:
+                self.full_house.submit(dice)
+            case 10:
+                self.small_straight.submit(dice)
+            case 11:
+                self.large_straight.submit(dice)
+            case 12:
+                self.kniffel.submit(dice)
+            case 13:
                 self.chance.submit(dice)
             case _:
                 raise InvalidIndexError()
@@ -283,9 +308,10 @@ class Category:
     Class for modelling a category
     """
 
-    def __init__(self, name: str):
+    def __init__(self, index: int, name: str):
         self.name = name
         self.dice = Dice()
+        self.index = index
 
     def submit(self, dice: Dice):
         self.dice = dice
@@ -300,8 +326,8 @@ class UpperCategory(Category):
     Class for modelling an upper category
     """
 
-    def __init__(self, name: str, category_value: int = 0):
-        super().__init__(name)
+    def __init__(self, index: int, name: str, category_value: int = 0):
+        super().__init__(index, name)
         self.category_value = category_value
 
     def evaluate(self):
