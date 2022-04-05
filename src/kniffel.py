@@ -184,22 +184,23 @@ class LowerBlock:
         return total
 
     def submit(self, dice: Dice, category_index: int):
-        if category_index == 7:
-            self.three_of_a_kind.submit(dice)
-        elif category_index == 8:
-            self.four_of_a_kind.submit(dice)
-        elif category_index == 9:
-            self.full_house.submit(dice)
-        elif category_index == 10:
-            self.small_straight.submit(dice)
-        elif category_index == 11:
-            self.large_straight.submit(dice)
-        elif category_index == 12:
-            self.kniffel.submit(dice)
-        elif category_index == 13:
-            self.chance.submit(dice)
-        else:
-            raise Exception("Invalid category index")
+        match category_index:
+            case 1:
+                self.three_of_a_kind.submit(dice)
+            case 2:
+                self.four_of_a_kind.submit(dice)
+            case 3:
+                self.full_house.submit(dice)
+            case 4:
+                self.small_straight.submit(dice)
+            case 5:
+                self.large_straight.submit(dice)
+            case 6:
+                self.kniffel.submit(dice)
+            case 7:
+                self.chance.submit(dice)
+            case default:
+                raise Exception("Invalid category index")
 
 
 class Category:
@@ -244,7 +245,11 @@ class ThreeOfAKind(LowerCategory):
     def evaluate(self):
         for i in range(1, 6):
             if self.dice.count(i) >= 3:
-                return i * 3
+                total = 0
+                for j in range(5):
+                    total += self.dice.dice[j].value
+                return total
+        return 0
 
 
 class FourOfAKind(LowerCategory):
@@ -255,7 +260,11 @@ class FourOfAKind(LowerCategory):
     def evaluate(self):
         for i in range(1, 6):
             if self.dice.count(i) >= 4:
-                return i * 4
+                total = 0
+                for j in range(5):
+                    total += self.dice.dice[j].value
+                return total
+        return 0
 
 
 def main():
