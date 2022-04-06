@@ -10,6 +10,12 @@ from kniffel.exceptions import InvalidInputError, InvalidArgumentError, InvalidI
 
 
 def display_message(message):
+    """
+    Display a error message to the user
+    :param message:
+    :return:
+    """
+
     print("\033[93m" + str(message) + "\033[0m")
     # input("Press enter to continue...")
 
@@ -26,6 +32,11 @@ class Dice:
         return str([die.value for die in self.dice])
 
     def count(self, value: int):
+        """
+        Count the number of dice with the given value
+        :param value:
+        :return:
+        """
         occurrences = 0
         for die in self.dice:
             if die.value == value:
@@ -33,22 +44,41 @@ class Dice:
         return occurrences
 
     def includes(self, value: int):
+        """
+        Check if the dice contains a die with the given value
+        :param value:
+        :return:
+        """
         for die in self.dice:
             if die.value == value:
                 return True
         return False
 
     def roll(self):
+        """
+        Roll all dice
+        :return:
+        """
         for die in self.dice:
             die.roll()
         print("Rolled: " + str([die.value for die in self.dice]))
 
     def save(self, index: int):
+        """
+        Save the die at the given index
+        :param index:
+        :return:
+        """
         if index > len(self.dice) or index < 1:
             raise InvalidArgumentError()
         self.dice[index - 1].save()
 
     def un_save(self, index: int):
+        """
+        Un-save the die at the given index
+        :param index:
+        :return:
+        """
         if index > len(self.dice):
             raise InvalidArgumentError()
         self.dice[index].un_save()
@@ -64,18 +94,34 @@ class Die:
         self.saved = False
 
     def roll(self):
+        """
+        Roll the die
+        :return:
+        """
         if not self.saved:
             self.value = random.randint(1, 6)
 
     def save(self):
+        """
+        Save the die
+        :return:
+        """
         print("Saved: " + str(self.value))
         self.saved = True
 
     def un_save(self):
+        """
+        Unsave the die
+        :return:
+        """
         self.saved = False
 
 
 def show_help():
+    """
+    Show help for the game
+    :return:
+    """
     print(
         "Commands:\n"
         "[0] roll: Roll the dice\n"
@@ -102,16 +148,42 @@ class Game:
         self.active_player.rolls = 1
 
     def roll(self):
+        """
+        Roll the dice
+        :return:
+        """
         self.active_player.roll()
 
     def save(self, die_index: int):
+        """
+        Save the die with the given index
+        :param die_index:
+        :return:
+        """
         self.active_player.save(die_index)
 
+    def un_save(self, die_index: int):
+        """
+        Unsave the die with the given index
+        :param die_index:
+        :return:
+        """
+        self.active_player.un_save(die_index)
+
     def submit(self, category_index: int):
+        """
+        Submit the score for the given category
+        :param category_index:
+        :return:
+        """
         self.active_player.submit(category_index)
         self.end_turn()
 
     def end_turn(self):
+        """
+        End the current turn
+        :return:
+        """
         self.active_player = self.players[(self.players.index(self.active_player) + 1) % len(self.players)]
         self.active_player.turns += 1
         print("*" * 20)
@@ -119,10 +191,18 @@ class Game:
         self.roll()
 
     def show_dice(self):
+        """
+        Show the dice values and if they are saved
+        :return:
+        """
         print("Dice: " + str([die.value for die in self.active_player.dice.dice]))
         print("Saved: " + str([die.saved for die in self.active_player.dice.dice]))
 
     def show_score(self):
+        """
+        Show the current scoreboard
+        :return:
+        """
         print("Score:")
         for player in self.players:
             print(player.username + ": " + str(player.block.evaluate()))
@@ -163,6 +243,11 @@ class Game:
         print(my_table)
 
     def process_command(self, command_str: str):
+        """
+        Process a command string
+        :param command_str:
+        :return:
+        """
         if command_str == "":
             raise InvalidInputError()
         command = command_str.split()[0]
@@ -204,6 +289,10 @@ class Player:
         self.rolls = 1
 
     def roll(self):
+        """
+        Roll the dice
+        :return:
+        """
         if self.rolls < 3:
             self.dice.roll()
             self.rolls += 1
@@ -211,9 +300,27 @@ class Player:
         raise InvalidCommandError("You have already rolled 3 times")
 
     def save(self, die_index: int):
+        """
+        Save a die
+        :param die_index:
+        :return:
+        """
         self.dice.save(die_index)
 
+    def un_save(self, die_index: int):
+        """
+        Un-save a die
+        :param die_index:
+        :return:
+        """
+        self.dice.un_save(die_index)
+
     def submit(self, category_index: int):
+        """
+        Submit a category
+        :param category_index:
+        :return:
+        """
         self.block.submit(self.dice, category_index)
         self.dice = Dice()
         self.rolls = 1
@@ -229,9 +336,19 @@ class Block:
         self.lower = LowerBlock()
 
     def evaluate(self):
+        """
+        Evaluate the block return the total score
+        :return:
+        """
         return self.upper.evaluate() + self.lower.evaluate()
 
     def submit(self, dice: Dice, category_index: int):
+        """
+        Submit a category
+        :param dice:
+        :param category_index:
+        :return:
+        """
         if category_index <= 6:
             self.upper.submit(dice, category_index)
         else:
@@ -252,6 +369,10 @@ class UpperBlock:
         self.sixes = UpperCategory(6, "Sixes", 6)
 
     def evaluate(self):
+        """
+        Evaluate the upper block return the total score
+        :return:
+        """
         total = 0
         for value in vars(self).items():
             if isinstance(value, UpperCategory):
@@ -261,6 +382,12 @@ class UpperBlock:
         return total
 
     def submit(self, dice: Dice, category_index: int):
+        """
+        Submit a category
+        :param dice:
+        :param category_index:
+        :return:
+        """
         match category_index:
             case 1:
                 self.ones.submit(dice)
@@ -293,6 +420,10 @@ class LowerBlock:
         self.chance = Chance(13, "Chance")
 
     def evaluate(self):
+        """
+        Evaluate the lower block return the total score
+        :return:
+        """
         total = 0
         for value in vars(self).items():
             if isinstance(value, UpperCategory):
@@ -300,6 +431,12 @@ class LowerBlock:
         return total
 
     def submit(self, dice: Dice, category_index: int):
+        """
+        Submit a category
+        :param dice:
+        :param category_index:
+        :return:
+        """
         match category_index:
             case 7:
                 self.three_of_a_kind.submit(dice)
@@ -330,11 +467,20 @@ class Category:
         self.index = index
 
     def submit(self, dice: Dice):
+        """
+        Submit a category
+        :param dice:
+        :return:
+        """
         self.dice = dice
         print("Submitted " + str(dice) + " to " + self.name + " for a score of " + str(self.evaluate()))
 
     def evaluate(self):
-        pass
+        """
+        Evaluate the category return the score
+        :return:
+        """
+        raise NotImplementedError()
 
 
 class UpperCategory(Category):
@@ -355,8 +501,14 @@ class LowerCategory(Category):
     Class for modelling a lower category
     """
 
+    def evaluate(self):
+        pass
+
 
 class ThreeOfAKind(LowerCategory):
+    """
+    Class for modelling a three of a kind category
+    """
 
     def evaluate(self):
         for i in range(1, 6):
@@ -369,6 +521,9 @@ class ThreeOfAKind(LowerCategory):
 
 
 class FourOfAKind(LowerCategory):
+    """
+    Class for modelling a four of a kind category
+    """
 
     def evaluate(self):
         for i in range(1, 6):
@@ -381,6 +536,9 @@ class FourOfAKind(LowerCategory):
 
 
 class FullHouse(LowerCategory):
+    """
+    Class for modelling a full house category
+    """
 
     def evaluate(self):
         for i in range(1, 6):
@@ -392,6 +550,9 @@ class FullHouse(LowerCategory):
 
 
 class SmallStraight(LowerCategory):
+    """
+    Class for modelling a small straight category
+    """
 
     def evaluate(self):
         for i in range(1, 6):
@@ -403,6 +564,9 @@ class SmallStraight(LowerCategory):
 
 
 class LargeStraight(LowerCategory):
+    """
+    Class for modelling a large straight category
+    """
 
     def evaluate(self):
         for i in range(1, 6):
@@ -414,6 +578,9 @@ class LargeStraight(LowerCategory):
 
 
 class Kniffel(LowerCategory):
+    """
+    Class for modelling a kniffel category
+    """
 
     def evaluate(self):
         for i in range(1, 6):
@@ -423,6 +590,9 @@ class Kniffel(LowerCategory):
 
 
 class Chance(LowerCategory):
+    """
+    Class for modelling a chance category
+    """
 
     def evaluate(self):
         total = 0
@@ -432,6 +602,10 @@ class Chance(LowerCategory):
 
 
 def main():
+    """
+    Main function
+    :return:
+    """
     game = Game(2)
     while True:
         try:
