@@ -13,7 +13,7 @@ from kniffel.exceptions import InvalidInputError, InvalidArgumentError, InvalidI
 
 def display_message(message):
     """
-    Display a error message to the user
+    Display an error message to the user
     :param message:
     :return:
     """
@@ -61,9 +61,16 @@ class Dice:
         Roll all dice
         :return:
         """
+        self.silent_roll()
+        print("Rolled: " + str([die.value for die in self.dice]))
+
+    def silent_roll(self):
+        """
+        Roll all dice without displaying the result
+        :return:
+        """
         for die in self.dice:
             die.roll()
-        print("Rolled: " + str([die.value for die in self.dice]))
 
     def save(self, index: int):
         """
@@ -148,7 +155,6 @@ class Game:
             self.players.append(Player("Player " + str(i + 1)))
         self.active_player = self.players[0]
         self.active_player.roll()
-        self.active_player.rolls = 1
 
     def roll(self):
         """
@@ -200,7 +206,7 @@ class Game:
         Show the dice values and if they are saved
         :return:
         """
-        print("Dice: " + str([die.value for die in self.active_player.dice.dice]))
+        print("Dice: " + str([die.value for die in self.active_player.dice.dice]) + " Rolls: " + str(self.active_player.rolls))
         print("Saved: " + str([die.saved for die in self.active_player.dice.dice]))
 
     def show_score(self):
@@ -294,8 +300,8 @@ class Player:
         self.username = username
         self.block = Block()
         self.dice = Dice()
+        self.rolls = 0
         self.turns = 0
-        self.rolls = 1
 
     def roll(self):
         """
@@ -304,6 +310,17 @@ class Player:
         """
         if self.rolls < 3:
             self.dice.roll()
+            self.rolls += 1
+            return
+        raise InvalidCommandError("You have already rolled 3 times")
+
+    def silent_roll(self):
+        """
+        Roll the dice without showing the dice
+        :return:
+        """
+        if self.rolls < 3:
+            self.dice.silent_roll()
             self.rolls += 1
             return
         raise InvalidCommandError("You have already rolled 3 times")
@@ -332,7 +349,7 @@ class Player:
         """
         self.block.submit(self.dice, category_index)
         self.dice = Dice()
-        self.rolls = 1
+        self.rolls = 0
 
 
 class Block:
