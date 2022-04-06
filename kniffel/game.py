@@ -128,7 +128,7 @@ def show_help():
     print(
         "Commands:\n"
         "[0] roll: Roll the dice\n"
-        "[1] save <die_index>: Save the die with the given index[1-6]\n"
+        "[1] save <die_index>: Save the die with the given index[1-5]\n"
         "[2] submit <category_index>: Submit the score for the given category\n"
         "[3] help: Show this help message\n"
         "[4] score: Show the current game state\n"
