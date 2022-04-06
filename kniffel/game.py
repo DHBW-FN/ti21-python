@@ -207,9 +207,9 @@ class Game:
         """
         self.active_player = self.players[(self.players.index(self.active_player) + 1) % len(self.players)]
         self.active_player.turns += 1
+
         if self.active_player.turns > 13:
             self.end_game()
-        print("The new score is:")
         self.show_score()
         print("*" * 20)
         print(self.active_player.username + " is now playing")
@@ -317,27 +317,27 @@ class Game:
         arguments = command_str.split()[1:]
 
         match command:
-            case "roll":
+            case "roll" | 0:
                 self.roll()
-            case "save":
+            case "save" | 1:
                 if not arguments:
                     raise InvalidInputError()
                 self.save(list(map(int, arguments)))
-            case "un-save":
+            case "un-save" | 2:
                 if not arguments:
                     raise InvalidInputError()
                 self.un_save(list(map(int, arguments)))
-            case "submit":
+            case "submit" | 3:
                 if not arguments:
                     raise InvalidInputError()
                 self.submit(int(arguments[0]))
-            case "help":
+            case "help" | 4:
                 show_help()
-            case "score":
+            case "score" | 5:
                 self.show_score()
-            case "dice":
+            case "dice" | 6:
                 self.show_dice()
-            case "exit":
+            case "exit" | 9:
                 sys.exit(0)
             case _:
                 print("Unknown command: " + command)
