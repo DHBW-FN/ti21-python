@@ -8,7 +8,8 @@ from pathlib import Path
 from numpy import random
 from prettytable import PrettyTable
 
-from kniffel.exceptions import InvalidInputError, InvalidArgumentError, InvalidIndexError, InvalidCommandError
+from kniffel.exceptions import InvalidInputError, InvalidArgumentError, InvalidIndexError, InvalidCommandError, \
+    CategoryAlreadyFilledError
 
 
 def display_message(message):
@@ -72,25 +73,34 @@ class Dice:
         for die in self.dice:
             die.roll()
 
-    def save(self, index: int):
+    def save(self, indices: list[int]):
         """
         Save the die at the given index 1-5
-        :param index:
+        :param indices:
         :return:
         """
-        if index > len(self.dice) or index < 1:
-            raise InvalidArgumentError()
-        self.dice[index - 1].save()
+        for index in indices:
+            if index > len(self.dice) or index < 1:
+                raise InvalidArgumentError()
+            self.dice[index - 1].save()
 
-    def un_save(self, index: int):
+    def un_save(self, indices: list[int]):
         """
         Un-save the die at the given index 1-5
-        :param index:
+        :param indices:
         :return:
         """
-        if index > len(self.dice) or index < 1:
-            raise InvalidArgumentError()
-        self.dice[index - 1].un_save()
+        for index in indices:
+            if index > len(self.dice) or index < 1:
+                raise InvalidArgumentError()
+            self.dice[index - 1].un_save()
+
+    def is_rolled(self) -> bool:
+        """
+        Check if the category is filled
+        :return:
+        """
+        return self.dice[0].value != 0
 
 
 class Die:
@@ -136,7 +146,7 @@ def show_help():
         "Commands:\n"
         "[0] roll: Roll the dice\n"
         "[1] save <die_index>: Save the die with the given index[1-5]\n"
-        "[2] un-save <die_index>: Un-save the die with the given index[1-5]"
+        "[2] un_save <die_index>: Unsave the die with the given index[1-5]\n"
         "[3] submit <category_index>: Submit the score for the given category\n"
         "[4] help: Show this help message\n"
         "[5] score: Show the current game state\n"
@@ -155,6 +165,7 @@ class Game:
         for i in range(number_of_players):
             self.players.append(Player("Player " + str(i + 1)))
         self.active_player = self.players[0]
+        self.active_player.turns += 1
         self.active_player.roll()
 
     def roll(self):
@@ -164,21 +175,21 @@ class Game:
         """
         self.active_player.roll()
 
-    def save(self, die_index: int):
+    def save(self, die_indices: list[int]):
         """
         Save the die with the given index
-        :param die_index:
+        :param die_indices:
         :return:
         """
-        self.active_player.save(die_index)
+        self.active_player.save(die_indices)
 
-    def un_save(self, die_index: int):
+    def un_save(self, die_indices: list[int]):
         """
         Unsave the die with the given index
-        :param die_index:
+        :param die_indices:
         :return:
         """
-        self.active_player.un_save(die_index)
+        self.active_player.un_save(die_indices)
 
     def submit(self, category_index: int):
         """
@@ -196,6 +207,9 @@ class Game:
         """
         self.active_player = self.players[(self.players.index(self.active_player) + 1) % len(self.players)]
         self.active_player.turns += 1
+        
+        if self.active_player.turns > 13:
+            self.end_game()
         self.show_score()
         print("*" * 20)
         print(self.active_player.username + " is now playing")
@@ -274,9 +288,22 @@ class Game:
                           else "-" for player in self.players])
         my_table.add_row(["==", "Total Lower"] +
                          [str(player.block.lower.evaluate()) for player in self.players])
+        my_table.add_row(["==", "Kniffel-Bonus"] +
+                         [str(player.block.kniffel_bonus) for player in self.players])
         my_table.add_row(["==", "Total"] +
                          [str(player.block.evaluate()) for player in self.players])
         print(my_table)
+
+    def end_game(self):
+        """
+        End the game.
+        """
+        print("*" * 20)
+        print("\nGame over!\n")
+        print("*" * 20)
+        self.show_score()
+        print("\nThanks for playing!")
+        sys.exit(0)
 
     def process_command(self, command_str: str):
         """
@@ -295,11 +322,11 @@ class Game:
             case "save":
                 if not arguments:
                     raise InvalidInputError()
-                self.save(int(arguments[0]))
+                self.save(list(map(int, arguments)))
             case "un-save":
                 if not arguments:
                     raise InvalidInputError()
-                self.un_save(int(arguments[0]))
+                self.un_save(list(map(int, arguments)))
             case "submit":
                 if not arguments:
                     raise InvalidInputError()
@@ -372,21 +399,21 @@ class Player:
             return
         raise InvalidCommandError("You have already rolled 3 times")
 
-    def save(self, die_index: int):
+    def save(self, die_indices: list[int]):
         """
         Save a die
-        :param die_index:
+        :param die_indices:
         :return:
         """
-        self.dice.save(die_index)
+        self.dice.save(die_indices)
 
-    def un_save(self, die_index: int):
+    def un_save(self, die_indices: list[int]):
         """
         Un-save a die
-        :param die_index:
+        :param die_indices:
         :return:
         """
-        self.dice.un_save(die_index)
+        self.dice.un_save(die_indices)
 
     def submit(self, category_index: int):
         """
@@ -407,13 +434,14 @@ class Block:
     def __init__(self):
         self.upper = UpperBlock()
         self.lower = LowerBlock()
+        self.kniffel_bonus = 0
 
     def evaluate(self):
         """
         Evaluate the block return the total score
         :return:
         """
-        return self.upper.evaluate() + self.lower.evaluate()
+        return self.upper.evaluate() + self.lower.evaluate() + self.kniffel_bonus
 
     def submit(self, dice: Dice, category_index: int):
         """
@@ -424,6 +452,10 @@ class Block:
         """
         if category_index <= 6:
             self.upper.submit(dice, category_index)
+            if self.lower.kniffel.evaluate() > 0:
+                if dice.count(category_index) == 5:
+                    print("You just earned a Kniffel-Bonus! +50 points")
+                    self.kniffel_bonus += 50
         else:
             self.lower.submit(dice, category_index)
 
@@ -448,6 +480,8 @@ class UpperBlock:
         """
         total = 0
         for value in vars(self).items():
+            if len(value) > 1:
+                value = value[1]
             if isinstance(value, UpperCategory):
                 total += value.evaluate()
         if total >= 63:
@@ -499,7 +533,9 @@ class LowerBlock:
         """
         total = 0
         for value in vars(self).items():
-            if isinstance(value, UpperCategory):
+            if len(value) > 1:
+                value = value[1]
+            if isinstance(value, Category):
                 total += value.evaluate()
         return total
 
@@ -545,6 +581,8 @@ class Category:
         :param dice:
         :return:
         """
+        if self.dice.is_rolled():
+            raise CategoryAlreadyFilledError()
         self.dice = dice
         print("Submitted " + str(dice) + " to " + self.name + " for a score of " + str(self.evaluate()))
 
@@ -584,7 +622,7 @@ class ThreeOfAKind(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) >= 3:
                 total = 0
                 for j in range(5):
@@ -599,7 +637,7 @@ class FourOfAKind(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) >= 4:
                 total = 0
                 for j in range(5):
@@ -614,9 +652,9 @@ class FullHouse(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) == 3:
-                for j in range(1, 6):
+                for j in range(1, 7):
                     if self.dice.count(j) == 2 & i != j:
                         return 25
         return 0
@@ -628,7 +666,7 @@ class SmallStraight(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) == 1:
                 for j in range(i + 1, i + 4):
                     if self.dice.count(j) == 1:
@@ -642,7 +680,7 @@ class LargeStraight(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) == 1:
                 for j in range(i + 1, i + 5):
                     if self.dice.count(j) == 1:
@@ -656,7 +694,7 @@ class Kniffel(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) == 5:
                 return 50
         return 0
@@ -702,6 +740,8 @@ def main():
             display_message("Invalid index.")
         except InvalidCommandError as error:
             display_message(error)
+        except CategoryAlreadyFilledError:
+            display_message("Category already filled.")
 
 
 if __name__ == "__main__":
