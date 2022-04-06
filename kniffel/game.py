@@ -274,6 +274,8 @@ class Game:
                           else "-" for player in self.players])
         my_table.add_row(["==", "Total Lower"] +
                          [str(player.block.lower.evaluate()) for player in self.players])
+        my_table.add_row(["==", "Kniffel-Bonus"] +
+                         [str(player.block.kniffel_bonus) for player in self.players])
         my_table.add_row(["==", "Total"] +
                          [str(player.block.evaluate()) for player in self.players])
         print(my_table)
@@ -385,13 +387,14 @@ class Block:
     def __init__(self):
         self.upper = UpperBlock()
         self.lower = LowerBlock()
+        self.kniffel_bonus = 0
 
     def evaluate(self):
         """
         Evaluate the block return the total score
         :return:
         """
-        return self.upper.evaluate() + self.lower.evaluate()
+        return self.upper.evaluate() + self.lower.evaluate() + self.kniffel_bonus
 
     def submit(self, dice: Dice, category_index: int):
         """
@@ -402,6 +405,10 @@ class Block:
         """
         if category_index <= 6:
             self.upper.submit(dice, category_index)
+            if self.lower.kniffel.evaluate() > 0:
+                if dice.count(category_index) == 5:
+                    print("You just earned a Kniffel-Bonus! +50 points")
+                    self.kniffel_bonus += 50
         else:
             self.lower.submit(dice, category_index)
 
@@ -426,6 +433,8 @@ class UpperBlock:
         """
         total = 0
         for value in vars(self).items():
+            if len(value) > 1:
+                value = value[1]
             if isinstance(value, UpperCategory):
                 total += value.evaluate()
         if total >= 63:
@@ -477,7 +486,9 @@ class LowerBlock:
         """
         total = 0
         for value in vars(self).items():
-            if isinstance(value, UpperCategory):
+            if len(value) > 1:
+                value = value[1]
+            if isinstance(value, Category):
                 total += value.evaluate()
         return total
 
@@ -562,7 +573,7 @@ class ThreeOfAKind(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) >= 3:
                 total = 0
                 for j in range(5):
@@ -577,7 +588,7 @@ class FourOfAKind(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) >= 4:
                 total = 0
                 for j in range(5):
@@ -592,7 +603,7 @@ class FullHouse(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) == 3:
                 for j in range(1, 6):
                     if self.dice.count(j) == 2 & i != j:
@@ -606,7 +617,7 @@ class SmallStraight(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) == 1:
                 for j in range(i + 1, i + 4):
                     if self.dice.count(j) == 1:
@@ -620,7 +631,7 @@ class LargeStraight(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) == 1:
                 for j in range(i + 1, i + 5):
                     if self.dice.count(j) == 1:
@@ -634,7 +645,7 @@ class Kniffel(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 6):
+        for i in range(1, 7):
             if self.dice.count(i) == 5:
                 return 50
         return 0
