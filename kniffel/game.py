@@ -65,7 +65,7 @@ class Dice:
 
     def save(self, index: int):
         """
-        Save the die at the given index
+        Save the die at the given index 1-5
         :param index:
         :return:
         """
@@ -75,13 +75,13 @@ class Dice:
 
     def un_save(self, index: int):
         """
-        Un-save the die at the given index
+        Un-save the die at the given index 1-5
         :param index:
         :return:
         """
-        if index > len(self.dice):
+        if index > len(self.dice) or index < 1:
             raise InvalidArgumentError()
-        self.dice[index].un_save()
+        self.dice[index - 1].un_save()
 
 
 class Die:
@@ -114,6 +114,7 @@ class Die:
         Unsave the die
         :return:
         """
+        print("Unsaved: " + str(self.value))
         self.saved = False
 
 
@@ -260,6 +261,10 @@ class Game:
                 if not arguments:
                     raise InvalidInputError()
                 self.save(int(arguments[0]))
+            case "un-save":
+                if not arguments:
+                    raise InvalidInputError()
+                self.un_save(int(arguments[0]))
             case "submit":
                 if not arguments:
                     raise InvalidInputError()
