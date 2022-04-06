@@ -1,7 +1,9 @@
 """
 Modelling and executing Kniffel
 """
+import pickle
 import sys
+from pathlib import Path
 
 from numpy import random
 from prettytable import PrettyTable
@@ -193,6 +195,8 @@ class Game:
         """
         self.active_player = self.players[(self.players.index(self.active_player) + 1) % len(self.players)]
         self.active_player.turns += 1
+        print("The new score is:")
+        self.show_score()
         print("*" * 20)
         print(self.active_player.username + " is now playing")
         self.roll()
@@ -630,7 +634,15 @@ def main():
     """
     game = Game(2)
 
+    path = Path("game.pkl")
+    if path.exists():
+        with open(path, "rb") as file:
+            game = pickle.load(file)
+
     while True:
+        with open(path, "wb") as file:
+            pickle.dump(game, file)
+
         try:
             game.process_command(input("Enter command: "))
         except ValueError as error:
