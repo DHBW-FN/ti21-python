@@ -207,7 +207,7 @@ class Game:
         """
         self.active_player = self.players[(self.players.index(self.active_player) + 1) % len(self.players)]
         self.active_player.turns += 1
-        
+
         if self.active_player.turns > 13:
             self.end_game()
         self.show_score()
