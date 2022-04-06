@@ -8,7 +8,8 @@ from pathlib import Path
 from numpy import random
 from prettytable import PrettyTable
 
-from kniffel.exceptions import InvalidInputError, InvalidArgumentError, InvalidIndexError, InvalidCommandError
+from kniffel.exceptions import InvalidInputError, InvalidArgumentError, InvalidIndexError, InvalidCommandError, \
+    CategoryAlreadyFilledError
 
 
 def display_message(message):
@@ -91,6 +92,13 @@ class Dice:
         if index > len(self.dice) or index < 1:
             raise InvalidArgumentError()
         self.dice[index - 1].un_save()
+
+    def is_rolled(self) -> bool:
+        """
+        Check if the category is filled
+        :return:
+        """
+        return self.dice[0].value != 0
 
 
 class Die:
@@ -523,6 +531,8 @@ class Category:
         :param dice:
         :return:
         """
+        if self.dice.is_rolled():
+            raise CategoryAlreadyFilledError()
         self.dice = dice
         print("Submitted " + str(dice) + " to " + self.name + " for a score of " + str(self.evaluate()))
 
@@ -680,6 +690,8 @@ def main():
             display_message("Invalid index.")
         except InvalidCommandError as error:
             display_message(error)
+        except CategoryAlreadyFilledError:
+            display_message("Category already filled.")
 
 
 if __name__ == "__main__":
