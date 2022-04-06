@@ -162,6 +162,7 @@ class Game:
         for i in range(number_of_players):
             self.players.append(Player("Player " + str(i + 1)))
         self.active_player = self.players[0]
+        self.active_player.turns += 1
         self.active_player.roll()
 
     def roll(self):
@@ -203,6 +204,8 @@ class Game:
         """
         self.active_player = self.players[(self.players.index(self.active_player) + 1) % len(self.players)]
         self.active_player.turns += 1
+        if self.active_player.turns > 13:
+            self.end_game()
         print("The new score is:")
         self.show_score()
         print("*" * 20)
@@ -285,6 +288,17 @@ class Game:
         my_table.add_row(["==", "Total"] +
                          [str(player.block.evaluate()) for player in self.players])
         print(my_table)
+
+    def end_game(self):
+        """
+        End the game.
+        """
+        print("*" * 20)
+        print("\nGame over!\n")
+        print("*" * 20)
+        self.show_score()
+        print("\nThanks for playing!")
+        sys.exit(0)
 
     def process_command(self, command_str: str):
         """
