@@ -1,7 +1,9 @@
 """
 Modelling and executing Kniffel
 """
+import pickle
 import sys
+from pathlib import Path
 
 from numpy import random
 from prettytable import PrettyTable
@@ -614,7 +616,16 @@ def main():
     :return:
     """
     game = Game(2)
+
+    path = Path("game.pkl")
+    if path.exists():
+        with open(path, "rb") as file:
+            game = pickle.load(file)
+
     while True:
+        with open(path, "wb") as file:
+            pickle.dump(game, file)
+
         try:
             game.process_command(input("Enter command: "))
         except ValueError as error:
