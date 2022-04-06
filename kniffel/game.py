@@ -317,49 +317,27 @@ class Game:
         arguments = command_str.split()[1:]
 
         match command:
-            case "roll":
+            case "roll" | 0:
                 self.roll()
-            case "save":
+            case "save" | 1:
                 if not arguments:
                     raise InvalidInputError()
                 self.save(list(map(int, arguments)))
-            case "un-save":
+            case "un-save" | 2:
                 if not arguments:
                     raise InvalidInputError()
                 self.un_save(list(map(int, arguments)))
-            case "submit":
+            case "submit" | 3:
                 if not arguments:
                     raise InvalidInputError()
                 self.submit(int(arguments[0]))
-            case "help":
+            case "help" | 4:
                 show_help()
-            case "score":
+            case "score" | 5:
                 self.show_score()
-            case "dice":
+            case "dice" | 6:
                 self.show_dice()
-            case "exit":
-                sys.exit(0)
-            case "0":
-                self.roll()
-            case "1":
-                if not arguments:
-                    raise InvalidInputError()
-                self.save(int(arguments[0]))
-            case "2":
-                if not arguments:
-                    raise InvalidInputError()
-                self.un_save(int(arguments[0]))
-            case "3":
-                if not arguments:
-                    raise InvalidInputError()
-                self.submit(int(arguments[0]))
-            case "4":
-                show_help()
-            case "5":
-                self.show_score()
-            case "6":
-                self.show_dice()
-            case "9":
+            case "exit" | 9:
                 sys.exit(0)
             case _:
                 print("Unknown command: " + command)
