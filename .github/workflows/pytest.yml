@@ -1,4 +1,4 @@
-name: Python Test
+name: Python Tests
 
 on:
   push:
@@ -11,11 +11,30 @@ on:
       - develop
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: [ "3.10" ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Analysing the code with pylint
+        run: |
+          pylint $(git ls-files '*.py')
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10"]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -25,11 +44,16 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pylint pytest
+        pip install pytest pytest-cov coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Analysing the code with pylint
-      run: |
-        pylint $(git ls-files '*.py')
     - name: Test with pytest
       run: |
-        pytest
+        pytest --junitxml=./reports/tests/test_report.xml --cov-report=term --cov=kniffel/ --cov-report=xml:./reports/coverage/coverage.xml
+    - name: Test Reporter
+      uses: dorny/test-reporter@v1.5.0
+      if: always()
+      with:
+        name: Pytest Tests
+        path: reports/tests/*.xml
+        reporter: java-junit
+        fail-on-error: true
