@@ -136,10 +136,11 @@ def show_help():
         "Commands:\n"
         "[0] roll: Roll the dice\n"
         "[1] save <die_index>: Save the die with the given index[1-5]\n"
-        "[2] submit <category_index>: Submit the score for the given category\n"
-        "[3] help: Show this help message\n"
-        "[4] score: Show the current game state\n"
-        "[5] dice: Show the current dice state\n"
+        "[2] un-save <die_index>: Un-save the die with the given index[1-5]"
+        "[3] submit <category_index>: Submit the score for the given category\n"
+        "[4] help: Show this help message\n"
+        "[5] score: Show the current game state\n"
+        "[6] dice: Show the current dice state\n"
         "[9] exit: Exit the game\n"
     )
 
@@ -195,7 +196,6 @@ class Game:
         """
         self.active_player = self.players[(self.players.index(self.active_player) + 1) % len(self.players)]
         self.active_player.turns += 1
-        print("The new score is:")
         self.show_score()
         print("*" * 20)
         print(self.active_player.username + " is now playing")
@@ -311,6 +311,28 @@ class Game:
             case "dice":
                 self.show_dice()
             case "exit":
+                sys.exit(0)
+            case "0":
+                self.roll()
+            case "1":
+                if not arguments:
+                    raise InvalidInputError()
+                self.save(int(arguments[0]))
+            case "2":
+                if not arguments:
+                    raise InvalidInputError()
+                self.un_save(int(arguments[0]))
+            case "3":
+                if not arguments:
+                    raise InvalidInputError()
+                self.submit(int(arguments[0]))
+            case "4":
+                show_help()
+            case "5":
+                self.show_score()
+            case "6":
+                self.show_dice()
+            case "9":
                 sys.exit(0)
             case _:
                 print("Unknown command: " + command)
