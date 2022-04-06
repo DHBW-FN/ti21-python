@@ -73,25 +73,27 @@ class Dice:
         for die in self.dice:
             die.roll()
 
-    def save(self, index: int):
+    def save(self, indices: list[int]):
         """
         Save the die at the given index 1-5
-        :param index:
+        :param indices:
         :return:
         """
-        if index > len(self.dice) or index < 1:
-            raise InvalidArgumentError()
-        self.dice[index - 1].save()
+        for index in indices:
+            if index > len(self.dice) or index < 1:
+                raise InvalidArgumentError()
+            self.dice[index - 1].save()
 
-    def un_save(self, index: int):
+    def un_save(self, indices: list[int]):
         """
         Un-save the die at the given index 1-5
-        :param index:
+        :param indices:
         :return:
         """
-        if index > len(self.dice) or index < 1:
-            raise InvalidArgumentError()
-        self.dice[index - 1].un_save()
+        for index in indices:
+            if index > len(self.dice) or index < 1:
+                raise InvalidArgumentError()
+            self.dice[index - 1].un_save()
 
     def is_rolled(self) -> bool:
         """
@@ -144,10 +146,11 @@ def show_help():
         "Commands:\n"
         "[0] roll: Roll the dice\n"
         "[1] save <die_index>: Save the die with the given index[1-5]\n"
-        "[2] submit <category_index>: Submit the score for the given category\n"
-        "[3] help: Show this help message\n"
-        "[4] score: Show the current game state\n"
-        "[5] dice: Show the current dice state\n"
+        "[2] un_save <die_index>: Unsave the die with the given index[1-5]\n"
+        "[3] submit <category_index>: Submit the score for the given category\n"
+        "[4] help: Show this help message\n"
+        "[5] score: Show the current game state\n"
+        "[6] dice: Show the current dice state\n"
         "[9] exit: Exit the game\n"
     )
 
@@ -172,21 +175,21 @@ class Game:
         """
         self.active_player.roll()
 
-    def save(self, die_index: int):
+    def save(self, die_indices: list[int]):
         """
         Save the die with the given index
-        :param die_index:
+        :param die_indices:
         :return:
         """
-        self.active_player.save(die_index)
+        self.active_player.save(die_indices)
 
-    def un_save(self, die_index: int):
+    def un_save(self, die_indices: list[int]):
         """
         Unsave the die with the given index
-        :param die_index:
+        :param die_indices:
         :return:
         """
-        self.active_player.un_save(die_index)
+        self.active_player.un_save(die_indices)
 
     def submit(self, category_index: int):
         """
@@ -319,11 +322,11 @@ class Game:
             case "save":
                 if not arguments:
                     raise InvalidInputError()
-                self.save(int(arguments[0]))
+                self.save(list(map(int, arguments)))
             case "un-save":
                 if not arguments:
                     raise InvalidInputError()
-                self.un_save(int(arguments[0]))
+                self.un_save(list(map(int, arguments)))
             case "submit":
                 if not arguments:
                     raise InvalidInputError()
@@ -374,21 +377,21 @@ class Player:
             return
         raise InvalidCommandError("You have already rolled 3 times")
 
-    def save(self, die_index: int):
+    def save(self, die_indices: list[int]):
         """
         Save a die
-        :param die_index:
+        :param die_indices:
         :return:
         """
-        self.dice.save(die_index)
+        self.dice.save(die_indices)
 
-    def un_save(self, die_index: int):
+    def un_save(self, die_indices: list[int]):
         """
         Un-save a die
-        :param die_index:
+        :param die_indices:
         :return:
         """
-        self.dice.un_save(die_index)
+        self.dice.un_save(die_indices)
 
     def submit(self, category_index: int):
         """
