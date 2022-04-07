@@ -171,7 +171,6 @@ class Game:
         self.active_player.turns += 1
         self.active_player.roll()
 
-
     def play(self, save_file: Path):
         """
         Play the game
@@ -265,9 +264,13 @@ class Game:
         Show the dice values and if they are saved
         :return:
         """
-        print("Dice: " + str([die.value for die in self.active_player.dice.dice]) + " Rolls: " + str(
-            self.active_player.rolls))
-        print("Saved: " + str([die.saved for die in self.active_player.dice.dice]))
+        print("Active player: " + self.active_player.name)
+
+        my_table = PrettyTable(["Dice Number"] + [str(i + 1) for i in range(len(self.active_player.dice.dice))])
+        my_table.add_row(["Dice Value"] + [str(die.value) for die in self.active_player.dice.dice])
+        my_table.add_row(["Saved"] + [str(die.saved) for die in self.active_player.dice.dice])
+
+        print(my_table)
 
     def show_score(self):
         """
