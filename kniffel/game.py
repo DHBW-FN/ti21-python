@@ -28,8 +28,8 @@ class Dice:
     Class for modelling a dice
     """
 
-    def __init__(self):
-        self.dice = [Die(), Die(), Die(), Die(), Die()]
+    def __init__(self, amount: int = 5):
+        self.dice = [Die() for _ in range(amount)]
 
     def __str__(self):
         return str([die.value for die in self.dice])
