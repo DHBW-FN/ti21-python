@@ -118,7 +118,7 @@ class Die:
         :return:
         """
         if not self.saved:
-            self.value = random.randint(1, 6)
+            self.value = random.randint(1, 7)
 
     def save(self):
         """
