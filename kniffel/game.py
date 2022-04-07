@@ -712,12 +712,17 @@ def main():
     Main function
     :return:
     """
-    game = Game(2)
 
     path = Path("game.pkl")
     if path.exists():
+        print("Loading game...")
         with open(path, "rb") as file:
             game = pickle.load(file)
+        print("Game loaded!")
+    else:
+        print("Creating new game...")
+        game = Game(2)
+        print("Game created!")
 
     while True:
         with open(path, "wb") as file:
