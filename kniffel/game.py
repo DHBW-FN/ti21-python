@@ -326,29 +326,29 @@ class Game:
         arguments = command_str.split()[1:]
 
         match command:
-            case "roll" | 0:
+            case "roll" | "0":
                 self.roll()
-            case "save" | 1:
+            case "save" | "1":
                 if not arguments:
                     raise InvalidInputError()
                 self.save(list(map(int, arguments)))
-            case "un-save" | 2:
+            case "un-save" | "2":
                 if not arguments:
                     raise InvalidInputError()
                 self.un_save(list(map(int, arguments)))
-            case "submit" | 3:
+            case "submit" | "3":
                 if not arguments:
                     raise InvalidInputError()
                 self.submit(int(arguments[0]))
-            case "help" | 4:
+            case "help" | "4":
                 show_help()
-            case "score" | 5:
+            case "score" | "5":
                 self.show_score()
-            case "dice" | 6:
+            case "dice" | "6":
                 self.show_dice()
-            case "reset" | 7:
+            case "reset" | "7":
                 self.reset()
-            case "exit" | 9:
+            case "exit" | "9":
                 sys.exit(0)
             case _:
                 print("Unknown command: " + command)
