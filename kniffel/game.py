@@ -200,7 +200,7 @@ class Game:
                 display_message(error)
             except CategoryAlreadyFilledError:
                 display_message("Category already filled.")
-                
+
     def reset(self):
         """
         Reset the game
