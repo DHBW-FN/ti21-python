@@ -151,6 +151,7 @@ def show_help():
         "[4] help: Show this help message\n"
         "[5] score: Show the current game state\n"
         "[6] dice: Show the current dice state\n"
+        "[7] reset: Reset the game\n"
         "[9] exit: Exit the game\n"
     )
 
@@ -167,6 +168,18 @@ class Game:
         self.active_player = self.players[0]
         self.active_player.turns += 1
         self.active_player.roll()
+
+    def reset(self):
+        """
+        Reset the game
+        :return:
+        """
+        for player in self.players:
+            player.reset()
+        self.active_player = self.players[0]
+        self.active_player.turns += 1
+        self.active_player.roll()
+        print("Game reset")
 
     def roll(self):
         """
@@ -212,7 +225,7 @@ class Game:
             self.end_game()
         self.show_score()
         print("*" * 20)
-        print(self.active_player.username + " is now playing")
+        print(self.active_player.name + " is now playing")
         self.roll()
 
     def show_dice(self):
@@ -228,11 +241,7 @@ class Game:
         Show the current scoreboard
         :return:
         """
-        print("Score:")
-        for player in self.players:
-            print(player.username + ": " + str(player.block.evaluate()))
-
-        my_table = PrettyTable(["Id", "Categories"] + [player.username for player in self.players])
+        my_table = PrettyTable(["Id", "Categories"] + [player.name for player in self.players])
         my_table.add_row([self.active_player.block.upper.ones.index, "Ones"] +
                          [str(player.block.upper.ones.evaluate())
                           if player.block.upper.ones.dice.count(0) == 0
@@ -337,6 +346,8 @@ class Game:
                 self.show_score()
             case "dice" | 6:
                 self.show_dice()
+            case "reset" | 7:
+                self.reset()
             case "exit" | 9:
                 sys.exit(0)
             case _:
@@ -348,12 +359,18 @@ class Player:
     Class for modelling a player
     """
 
-    def __init__(self, username: str):
-        self.username = username
+    def __init__(self, name: str):
+        self.name = name
         self.block = Block()
         self.dice = Dice()
         self.rolls = 0
         self.turns = 0
+
+    def reset(self):
+        """
+        Reset the player
+        """
+        self.__init__(self.name)
 
     def roll(self):
         """
