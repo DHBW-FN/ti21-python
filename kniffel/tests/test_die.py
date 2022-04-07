@@ -29,7 +29,7 @@ class TestDie(TestCase):
         self.assertEqual(self.die.roll(), 0)
 
     def test_un_save(self):
-        self.die.save = True
+        self.die.saved = True
         self.die.value = 0
         self.die.un_save()
         self.assertIn(self.die.roll(), range(1, 7))
