@@ -715,11 +715,12 @@ class SmallStraight(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 7):
+        for i in range(1, 4):
             if self.dice.count(i) == 1:
                 for j in range(i + 1, i + 4):
-                    if self.dice.count(j) == 1:
-                        return 30
+                    if self.dice.count(j) == 0:
+                        return 0
+                return 30
         return 0
 
 
@@ -729,11 +730,12 @@ class LargeStraight(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 7):
+        for i in range(1, 3):
             if self.dice.count(i) == 1:
                 for j in range(i + 1, i + 5):
-                    if self.dice.count(j) == 1:
-                        return 40
+                    if self.dice.count(j) == 0:
+                        return 0
+                return 40
         return 0
 
 
