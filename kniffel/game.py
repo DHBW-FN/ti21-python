@@ -161,13 +161,45 @@ class Game:
     Class for modelling a Kniffel game
     """
 
-    def __init__(self, number_of_players: int):
+    def __init__(self, number_of_players: int, number_of_ai: int):
         self.players = []
         for i in range(number_of_players):
             self.players.append(Player("Player " + str(i + 1)))
+        for i in range(number_of_ai):
+            self.players.append(AIPlayer("AI " + str(i + 1)))
         self.active_player = self.players[0]
         self.active_player.turns += 1
         self.active_player.roll()
+
+
+    def play(self, save_file: Path):
+        """
+        Play the game
+        :param save_file:
+        :return:
+        """
+        while True:
+            if isinstance(self.active_player, AIPlayer):
+                self.active_player.play()
+                self.end_turn()
+                continue
+            with open(save_file, "wb") as file:
+                pickle.dump(self, file)
+
+            try:
+                self.process_command(input("Enter command: "))
+            except ValueError as error:
+                display_message(error)
+            except InvalidInputError:
+                display_message("Invalid input.")
+            except InvalidArgumentError:
+                display_message("Invalid argument.")
+            except InvalidIndexError:
+                display_message("Invalid index.")
+            except InvalidCommandError as error:
+                display_message(error)
+            except CategoryAlreadyFilledError:
+                display_message("Category already filled.")
 
     def reset(self):
         """
@@ -233,7 +265,8 @@ class Game:
         Show the dice values and if they are saved
         :return:
         """
-        print("Dice: " + str([die.value for die in self.active_player.dice.dice]) + " Rolls: " + str(self.active_player.rolls))
+        print("Dice: " + str([die.value for die in self.active_player.dice.dice]) + " Rolls: " + str(
+            self.active_player.rolls))
         print("Saved: " + str([die.saved for die in self.active_player.dice.dice]))
 
     def show_score(self):
@@ -421,6 +454,33 @@ class Player:
         self.rolls = 0
 
 
+class AIPlayer(Player):
+    """
+    Class for modelling an AI player
+    """
+
+    def play(self):
+        """
+        Play a turn
+        :return:
+        """
+        best_index = -1
+        best_score = -1
+        for value in vars(self.block).items():
+            if isinstance(value[1], (UpperBlock, LowerBlock)):
+                for category in vars(value[1]).items():
+                    if isinstance(category[1], Category):
+                        if category[1].test_evaluate(self.dice) >= best_score:
+                            best_score = category[1].test_evaluate(self.dice)
+                            best_index = category[1].index
+
+        # if best_score < 10 and self.rolls < 3:
+        #     self.silent_roll()
+        #     self.play()
+
+        self.submit(best_index)
+
+
 class Block:
     """
     Class for modelling a block
@@ -588,6 +648,18 @@ class Category:
         """
         raise NotImplementedError()
 
+    def test_evaluate(self, dice: Dice):
+        """
+        Evaluate the category return the score
+        :return:
+        """
+        if self.dice.is_rolled():
+            return -1
+        self.dice = dice
+        value = self.evaluate()
+        self.dice = Dice()
+        return value
+
 
 class UpperCategory(Category):
     """
@@ -661,11 +733,12 @@ class SmallStraight(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 7):
+        for i in range(1, 4):
             if self.dice.count(i) == 1:
                 for j in range(i + 1, i + 4):
-                    if self.dice.count(j) == 1:
-                        return 30
+                    if self.dice.count(j) == 0:
+                        return 0
+                return 30
         return 0
 
 
@@ -675,11 +748,12 @@ class LargeStraight(LowerCategory):
     """
 
     def evaluate(self):
-        for i in range(1, 7):
+        for i in range(1, 3):
             if self.dice.count(i) == 1:
                 for j in range(i + 1, i + 5):
-                    if self.dice.count(j) == 1:
-                        return 40
+                    if self.dice.count(j) == 0:
+                        return 0
+                return 40
         return 0
 
 
@@ -721,27 +795,10 @@ def main():
         print("Game loaded!")
     else:
         print("Creating new game...")
-        game = Game(2)
+        game = Game(1, 1)
         print("Game created!")
 
-    while True:
-        with open(path, "wb") as file:
-            pickle.dump(game, file)
-
-        try:
-            game.process_command(input("Enter command: "))
-        except ValueError as error:
-            display_message(error)
-        except InvalidInputError:
-            display_message("Invalid input.")
-        except InvalidArgumentError:
-            display_message("Invalid argument.")
-        except InvalidIndexError:
-            display_message("Invalid index.")
-        except InvalidCommandError as error:
-            display_message(error)
-        except CategoryAlreadyFilledError:
-            display_message("Category already filled.")
+    game.play(path)
 
 
 if __name__ == "__main__":
