@@ -178,12 +178,13 @@ class Game:
         :return:
         """
         while True:
+            with open(save_file, "wb") as file:
+                pickle.dump(self, file)
+
             if isinstance(self.active_player, AIPlayer):
                 self.active_player.play()
                 self.end_turn()
                 continue
-            with open(save_file, "wb") as file:
-                pickle.dump(self, file)
 
             try:
                 self.process_command(input("Enter command: "))
