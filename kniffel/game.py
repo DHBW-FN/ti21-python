@@ -110,9 +110,9 @@ class Die:
     Class for modelling a die
     """
 
-    def __init__(self):
-        self.value = 0
-        self.saved = False
+    def __init__(self, value=0, saved=False):
+        self.value = value
+        self.saved = saved
 
     def roll(self):
         """
