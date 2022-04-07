@@ -64,6 +64,7 @@ class Dice:
         """
         self.silent_roll()
         print("Rolled: " + str([die.value for die in self.dice]))
+        return list(die.value for die in self.dice)
 
     def silent_roll(self):
         """
@@ -72,6 +73,7 @@ class Dice:
         """
         for die in self.dice:
             die.roll()
+        return list(die.value for die in self.dice)
 
     def save(self, indices: list[int]):
         """
@@ -119,6 +121,7 @@ class Die:
         """
         if not self.saved:
             self.value = random.randint(1, 7)
+        return self.value
 
     def save(self):
         """
@@ -218,7 +221,7 @@ class Game:
         Roll the dice
         :return:
         """
-        self.active_player.roll()
+        return self.active_player.roll()
 
     def save(self, die_indices: list[int]):
         """
@@ -415,9 +418,8 @@ class Player:
         :return:
         """
         if self.rolls < 3:
-            self.dice.roll()
             self.rolls += 1
-            return
+            return self.dice.roll()
         raise InvalidCommandError("You have already rolled 3 times")
 
     def silent_roll(self):
@@ -426,9 +428,8 @@ class Player:
         :return:
         """
         if self.rolls < 3:
-            self.dice.silent_roll()
             self.rolls += 1
-            return
+            return self.dice.silent_roll()
         raise InvalidCommandError("You have already rolled 3 times")
 
     def save(self, die_indices: list[int]):
