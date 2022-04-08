@@ -12,7 +12,7 @@ class TestDie(TestCase):
     def test_constructor(self):
         self.die = Die(1, True)
         self.assertEqual(self.die.value, 1)
-        self.assertTrue(self.die.save)
+        self.assertTrue(self.die.saved)
 
     def test_all_values_rollable(self):
         rolled_values = [self.die.roll() for _ in range(1000)]

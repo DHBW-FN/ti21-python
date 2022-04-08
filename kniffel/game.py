@@ -73,7 +73,8 @@ class Dice:
         :return:
         """
         self.silent_roll()
-        print("Rolled: " + str([die.value for die in self.dice]))
+        print("Rolled the dice!")
+        self.print()
         return list(die.value for die in self.dice)
 
     def silent_roll(self):
@@ -95,6 +96,7 @@ class Dice:
             if index > len(self.dice) or index < 1:
                 raise InvalidArgumentError()
             self.dice[index - 1].save()
+        self.print()
 
     def un_save(self, indices: list[int]):
         """
@@ -106,6 +108,7 @@ class Dice:
             if index > len(self.dice) or index < 1:
                 raise InvalidArgumentError()
             self.dice[index - 1].un_save()
+        self.print()
 
     def is_rolled(self) -> bool:
         """
@@ -125,6 +128,16 @@ class Dice:
                 raise InvalidArgumentError()
         for index, value in enumerate(values):
             self.dice[index].value = value
+
+    def print(self):
+        """
+        Print the dice and show the saved status
+        """
+        my_table = PrettyTable(["Dice Number"] + [str(i + 1) for i in range(len(self.dice))])
+        my_table.add_row(["Dice Value"] + [str(die.value) for die in self.dice])
+        my_table.add_row(["Saved"] + [str(die.saved) for die in self.dice])
+
+        print(my_table)
 
 
 class Die:
@@ -155,15 +168,13 @@ class Die:
         Save the die
         :return:
         """
-        print("Saved: " + str(self.value))
         self.saved = True
 
     def un_save(self):
         """
-        Unsave the die
+        Un-save the die
         :return:
         """
-        print("Unsaved: " + str(self.value))
         self.saved = False
 
 
@@ -191,7 +202,8 @@ class Game:
     Class for modelling a Kniffel game
     """
 
-    def __init__(self, number_of_players: int, number_of_ai: int):
+    def __init__(self, number_of_players: int, number_of_ai: int, path: str = "game.pkl"):
+        self.path = path
         self.players = []
         for i in range(number_of_players):
             self.players.append(Player("Player " + str(i + 1)))
@@ -201,15 +213,13 @@ class Game:
         self.active_player.turns += 1
         self.active_player.roll()
 
-    def play(self, save_file: Path):
+    def play(self):
         """
         Play the game
-        :param save_file:
         :return:
         """
         while True:
-            with open(save_file, "wb") as file:
-                pickle.dump(self, file)
+            self.save_game()
 
             if isinstance(self.active_player, AIPlayer):
                 self.active_player.play()
@@ -217,7 +227,7 @@ class Game:
                 continue
 
             try:
-                self.process_command(input("Enter command: "))
+                self.process_command(input(f"[{self.active_player.name}] Enter command: "))
             except ValueError as error:
                 display_message(error)
             except InvalidInputError:
@@ -230,6 +240,14 @@ class Game:
                 display_message(error)
             except CategoryAlreadyFilledError:
                 display_message("Category already filled.")
+
+    def save_game(self):
+        """
+        Save the game
+        :return:
+        """
+        with open(self.path, "wb") as file:
+            pickle.dump(self, file)
 
     def reset(self):
         """
@@ -290,18 +308,11 @@ class Game:
         print(self.active_player.name + " is now playing")
         self.roll()
 
-    def show_dice(self):
+    def print_dice(self):
         """
-        Show the dice values and if they are saved
-        :return:
+        Print the dice
         """
-        print("Active player: " + self.active_player.name)
-
-        my_table = PrettyTable(["Dice Number"] + [str(i + 1) for i in range(len(self.active_player.dice.dice))])
-        my_table.add_row(["Dice Value"] + [str(die.value) for die in self.active_player.dice.dice])
-        my_table.add_row(["Saved"] + [str(die.saved) for die in self.active_player.dice.dice])
-
-        print(my_table)
+        self.active_player.print_dice()
 
     def show_score(self):
         """
@@ -412,7 +423,7 @@ class Game:
             case "score" | "5":
                 self.show_score()
             case "dice" | "6":
-                self.show_dice()
+                self.print_dice()
             case "reset" | "7":
                 self.reset()
             case "exit" | "9":
@@ -484,6 +495,12 @@ class Player:
         self.block.submit(self.dice, category_index)
         self.dice = Dice()
         self.rolls = 0
+
+    def print_dice(self):
+        """
+        Print the dice
+        """
+        self.dice.print()
 
 
 class AIPlayer(Player):
@@ -830,7 +847,7 @@ def main():
         game = Game(1, 1)
         print("Game created!")
 
-    game.play(path)
+    game.play()
 
 
 if __name__ == "__main__":
