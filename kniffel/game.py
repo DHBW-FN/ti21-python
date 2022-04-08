@@ -164,7 +164,8 @@ class Game:
     Class for modelling a Kniffel game
     """
 
-    def __init__(self, number_of_players: int, number_of_ai: int):
+    def __init__(self, number_of_players: int, number_of_ai: int, path: str = "game.pkl"):
+        self.path = path
         self.players = []
         for i in range(number_of_players):
             self.players.append(Player("Player " + str(i + 1)))
@@ -174,15 +175,13 @@ class Game:
         self.active_player.turns += 1
         self.active_player.roll()
 
-    def play(self, save_file: Path):
+    def play(self):
         """
         Play the game
-        :param save_file:
         :return:
         """
         while True:
-            with open(save_file, "wb") as file:
-                pickle.dump(self, file)
+            self.save_game()
 
             if isinstance(self.active_player, AIPlayer):
                 self.active_player.play()
@@ -203,6 +202,15 @@ class Game:
                 display_message(error)
             except CategoryAlreadyFilledError:
                 display_message("Category already filled.")
+
+    def save_game(self):
+        """
+        Save the game
+        :param save_file:
+        :return:
+        """
+        with open(self.path, "wb") as file:
+            pickle.dump(self, file)
 
     def reset(self):
         """
@@ -803,7 +811,7 @@ def main():
         game = Game(1, 1)
         print("Game created!")
 
-    game.play(path)
+    game.play()
 
 
 if __name__ == "__main__":
