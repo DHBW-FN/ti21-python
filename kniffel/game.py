@@ -34,6 +34,16 @@ class Dice:
     def __str__(self):
         return str([die.value for die in self.dice])
 
+    def __eq__(self, other):
+        if not isinstance(other, Dice):
+            return False
+        if len(self.dice) != len(other.dice):
+            return False
+        for index, obj in enumerate(self.dice):
+            if obj != other.dice[index]:
+                return False
+        return True
+
     def count(self, value: int):
         """
         Count the number of dice with the given value
@@ -104,6 +114,18 @@ class Dice:
         """
         return self.dice[0].value != 0
 
+    def set_dice(self, values: list[int]):
+        """
+        Set the dice to the given values
+        """
+        if len(values) != len(self.dice):
+            raise InvalidArgumentError()
+        for value in values:
+            if value < 1 or value > 6:
+                raise InvalidArgumentError()
+        for index, value in enumerate(values):
+            self.dice[index].value = value
+
 
 class Die:
     """
@@ -113,6 +135,11 @@ class Die:
     def __init__(self, value=0, saved=False):
         self.value = value
         self.saved = saved
+
+    def __eq__(self, other):
+        if not isinstance(other, Die):
+            return False
+        return self.value == other.value and self.saved == other.saved
 
     def roll(self):
         """
