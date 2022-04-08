@@ -86,6 +86,7 @@ class Dice:
             if index > len(self.dice) or index < 1:
                 raise InvalidArgumentError()
             self.dice[index - 1].save()
+        self.print()
 
     def un_save(self, indices: list[int]):
         """
@@ -97,6 +98,7 @@ class Dice:
             if index > len(self.dice) or index < 1:
                 raise InvalidArgumentError()
             self.dice[index - 1].un_save()
+        self.print()
 
     def is_rolled(self) -> bool:
         """
@@ -139,15 +141,13 @@ class Die:
         Save the die
         :return:
         """
-        print("Saved: " + str(self.value))
         self.saved = True
 
     def un_save(self):
         """
-        Unsave the die
+        Un-save the die
         :return:
         """
-        print("Unsaved: " + str(self.value))
         self.saved = False
 
 
