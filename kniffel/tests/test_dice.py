@@ -21,11 +21,11 @@ class TestDice(TestCase):
         self.assertEqual(self.dice.count(1), 1)
         self.assertEqual(self.dice.count(6), 0)
 
+        self.dice.dice[0].value = 4
         self.dice.dice[1].value = 4
         self.dice.dice[2].value = 4
-        self.dice.dice[3].value = 4
+        self.dice.dice[3].value = 5
         self.dice.dice[4].value = 5
-        self.dice.dice[5].value = 5
         self.assertEqual(self.dice.count(4), 3)
         self.assertEqual(self.dice.count(5), 2)
 
@@ -49,14 +49,12 @@ class TestDice(TestCase):
         self.dice.roll()
         for i in range(5):
             self.assertNotEqual(self.dice.dice[i].value, 0)
-            self.assertEqual(self.dice.dice[i] in range(1, 6), True)
 
     def test_silent_roll(self):
         with patch('sys.stdout', new=StringIO()) as fake_out:
             self.dice.silent_roll()
             for i in range(5):
                 self.assertNotEqual(self.dice.dice[i].value, 0)
-                self.assertEqual(self.dice.dice[i] in range(1, 6), True)
             self.assertEqual(fake_out.getvalue(), '')
 
     def test_save(self):
