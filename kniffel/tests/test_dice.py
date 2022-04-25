@@ -16,10 +16,10 @@ class TestDice(TestCase):
             self.dice.dice[i].value = 1
         self.assertEqual(self.dice.count(1), 5)
 
+    def test_count_2(self):
         for i in range(5):
-            self.dice.dice[i].value = i
-        self.assertEqual(self.dice.count(1), 1)
-        self.assertEqual(self.dice.count(6), 0)
+            self.dice.dice[i].value = i + 1
+            self.assertEqual(self.dice.count(i + 1), 1)
 
         self.dice.dice[0].value = 4
         self.dice.dice[1].value = 4
