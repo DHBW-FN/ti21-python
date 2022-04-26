@@ -5,7 +5,8 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from kniffel.game import Dice, Kniffel, ThreeOfAKind, FourOfAKind
+from kniffel.models.category import Kniffel, FourOfAKind, ThreeOfAKind
+from kniffel.models.dice import Dice
 
 all_dice = []
 for i in range(1, 7):
@@ -13,8 +14,7 @@ for i in range(1, 7):
         for k in range(1, 7):
             for l in range(1, 7):
                 for m in range(1, 7):
-                    new_dice = Dice()
-                    new_dice.set_dice([i, j, k, l, m])
+                    new_dice = Dice(values=[i, j, k, l, m])
                     all_dice.append(new_dice)
 
 three_of_a_kind_dice = []
@@ -25,8 +25,7 @@ for i in range(1, 7):
                 for m in range(1, 7):
                     c = Counter([i, j, k, l, m])
                     if max(c.values()) >= 3:
-                        new_dice = Dice()
-                        new_dice.set_dice([i, j, k, l, m])
+                        new_dice = Dice(values=[i, j, k, l, m])
                         three_of_a_kind_dice.append(new_dice)
 not_three_of_a_kind_dice = []
 for dice in all_dice:
@@ -41,8 +40,7 @@ for i in range(1, 7):
                 for m in range(1, 7):
                     c = Counter([i, j, k, l, m])
                     if max(c.values()) >= 4:
-                        new_dice = Dice()
-                        new_dice.set_dice([i, j, k, l, m])
+                        new_dice = Dice(values=[i, j, k, l, m])
                         four_of_a_kind_dice.append(new_dice)
 not_four_of_a_kind_dice = []
 for dice in all_dice:
@@ -51,8 +49,7 @@ for dice in all_dice:
 
 kniffel_dice = []
 for i in range(1, 7):
-    new_dice = Dice()
-    new_dice.set_dice([i, i, i, i, i])
+    new_dice = Dice(values=[i, i, i, i, i])
     kniffel_dice.append(new_dice)
 not_kniffel_dice = []
 for dice in all_dice:

@@ -2,7 +2,8 @@
 # pylint: disable=protected-access
 from unittest import TestCase
 
-from kniffel.game import UpperCategory, Dice
+from kniffel.models.category import UpperCategory
+from kniffel.models.dice import Dice
 
 
 class TestUpperCategory(TestCase):
