@@ -11,36 +11,50 @@ class TestDice(TestCase):
     def setUp(self) -> None:
         self.dice = Dice()
 
-    def test_count(self):
+    def test_count_1(self):
         for i in range(5):
             self.dice.dice[i].value = 1
         self.assertEqual(self.dice.count(1), 5)
 
+    def test_count_2(self):
         for i in range(5):
             self.dice.dice[i].value = i
         self.assertEqual(self.dice.count(1), 1)
+
+    def test_count_3(self):
+        for i in range(5):
+            self.dice.dice[i].value = i
         self.assertEqual(self.dice.count(6), 0)
 
+    def test_count_4(self):
         self.dice.dice[0].value = 4
         self.dice.dice[1].value = 4
         self.dice.dice[2].value = 4
+        self.assertEqual(self.dice.count(4), 3)
+
+    def test_count_5(self):
         self.dice.dice[3].value = 5
         self.dice.dice[4].value = 5
-        self.assertEqual(self.dice.count(4), 3)
         self.assertEqual(self.dice.count(5), 2)
 
-    def test_includes(self):
+    def test_includes_1(self):
         self.assertEqual(self.dice.includes(0), True)
+
+    def test_includes_2(self):
         for i in range(1, 7, 1):
             self.dice.dice[1].value = i
             self.assertEqual(self.dice.includes(i), True)
+
+    def test_includes_3(self):
         for i in range(1, 7, 1):
             for k in range(5):
                 self.dice.dice[k].value = i
             self.assertEqual(self.dice.includes(i), True)
 
-    def test_includes_false(self):
+    def test_includes_false_1(self):
         self.assertEqual(self.dice.includes(1), False)
+
+    def test_includes_false_2(self):
         for i in range(5):
             self.dice.dice[i].value = 1
         self.assertEqual(self.dice.includes(0), False)
@@ -57,23 +71,32 @@ class TestDice(TestCase):
                 self.assertNotEqual(self.dice.dice[i].value, 0)
             self.assertEqual(fake_out.getvalue(), '')
 
-    def test_save(self):
+    def test_save_1(self):
         for i in range(5):
             self.assertEqual(self.dice.dice[i].saved, False)
+
+    def test_save_2(self):
         self.dice.save([1, 2])
         for i in range(2):
             self.assertEqual(self.dice.dice[i].saved, True)
+
+    def test_save_3(self):
+        self.dice.save([1, 2])
         for i in range(2, 5):
             self.assertEqual(self.dice.dice[i].saved, False)
+
+    def test_save_4(self):
         self.dice.save([1, 2, 3, 4, 5])
         for i in range(5):
             self.assertEqual(self.dice.dice[i].saved, True)
 
-    def test_un_save(self):
+    def test_un_save_1(self):
         for i in range(5):
             self.dice.dice[i].saved = True
         self.dice.un_save([1])
         self.assertEqual(self.dice.dice[0].saved, False)
+
+    def test_un_save_2(self):
         self.dice.un_save([1, 2, 3, 4, 5])
         for i in range(5):
             self.assertEqual(self.dice.dice[i].saved, False)
