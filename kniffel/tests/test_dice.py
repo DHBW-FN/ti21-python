@@ -4,7 +4,7 @@ from io import StringIO
 from unittest import TestCase
 from unittest.mock import patch
 
-from kniffel.game import Dice
+from kniffel.models.dice import Dice
 
 
 class TestDice(TestCase):
