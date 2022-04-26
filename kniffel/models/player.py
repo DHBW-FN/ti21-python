@@ -4,9 +4,7 @@ This file contains the Player and AIPlayer class
 from kniffel.exceptions import InvalidCommandError
 from kniffel.models.category import Category
 from kniffel.models.dice import Dice
-from kniffel.models.block import Block
-from kniffel.models.lowerblock import LowerBlock
-from kniffel.models.upperblock import UpperBlock
+from kniffel.models.block import Block, UpperBlock, LowerBlock
 
 
 class Player:
