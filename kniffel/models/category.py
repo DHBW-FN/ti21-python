@@ -65,7 +65,7 @@ class LowerCategory(Category):
     """
 
     def evaluate(self):
-        pass
+        raise NotImplementedError()
 
 
 class ThreeOfAKind(LowerCategory):

@@ -12,8 +12,13 @@ class Dice:
     Class for modelling a dice
     """
 
-    def __init__(self, amount: int = 5):
+    def __init__(self, amount: int = 5, values: list[int] = None):
         self.dice = [Die() for _ in range(amount)]
+        if values is not None:
+            if len(values) != amount:
+                raise InvalidArgumentError()
+            for index, value in enumerate(values):
+                self.dice[index].value = value
 
     def __str__(self):
         return str([die.value for die in self.dice])
