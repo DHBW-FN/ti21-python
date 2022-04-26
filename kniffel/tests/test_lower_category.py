@@ -71,7 +71,7 @@ class TestThreeOfAKind(TestCase):
     @parameterized.expand((str(test_dice), test_dice, 0) for test_dice in not_three_of_a_kind_dice)
     def test_evaluate_not_three_of_a_kind(self, _name, input_dice, expected_score):
         self.category.dice = input_dice
-        self.assertEqual(self.category.evaluate(), expected_score)
+        self.assertEqual(expected_score, self.category.evaluate())
 
 
 class TestFourOfAKind(TestCase):

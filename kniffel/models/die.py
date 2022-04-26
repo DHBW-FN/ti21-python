@@ -13,6 +13,11 @@ class Die:
         self.value = value
         self.saved = saved
 
+    def __eq__(self, other):
+        if not isinstance(other, Die):
+            return False
+        return self.value == other.value and self.saved == other.saved
+
     def roll(self):
         """
         Roll the die
