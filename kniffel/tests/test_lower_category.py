@@ -3,6 +3,8 @@
 from collections import Counter
 from unittest import TestCase
 
+from parameterized import parameterized
+
 from kniffel.game import Dice, Kniffel, ThreeOfAKind, FourOfAKind
 
 all_dice = []
@@ -60,18 +62,19 @@ for dice in all_dice:
 
 class TestThreeOfAKind(TestCase):
 
-    def setUp(self) -> None:
+    def setUp(self):
         self.category = ThreeOfAKind(7, "Three of a kind")
 
-    def test_evaluate(self):
-        for d in three_of_a_kind_dice:
-            self.category.dice = d
-            self.assertEqual(self.category.evaluate(), sum(d.value for d in d.dice))
+    @parameterized.expand((str(test_dice), test_dice, sum(test_die.value for test_die in test_dice.dice))
+                          for test_dice in three_of_a_kind_dice)
+    def test_evaluate(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(self.category.evaluate(), expected_score)
 
-    def test_evaluate_not_three_of_a_kind(self):
-        for d in not_three_of_a_kind_dice:
-            self.category.dice = d
-            self.assertEqual(self.category.evaluate(), 0)
+    @parameterized.expand((str(test_dice), test_dice, 0) for test_dice in not_three_of_a_kind_dice)
+    def test_evaluate_not_three_of_a_kind(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(self.category.evaluate(), expected_score)
 
 
 class TestFourOfAKind(TestCase):
@@ -79,27 +82,28 @@ class TestFourOfAKind(TestCase):
     def setUp(self) -> None:
         self.category = FourOfAKind(7, "Four of a kind")
 
-    def test_evaluate(self):
-        for d in four_of_a_kind_dice:
-            self.category.dice = d
-            self.assertEqual(self.category.evaluate(), sum(d.value for d in d.dice))
+    @parameterized.expand((str(test_dice), test_dice, sum(test_die.value for test_die in test_dice.dice))
+                          for test_dice in four_of_a_kind_dice)
+    def test_evaluate(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(self.category.evaluate(), expected_score)
 
-    def test_evaluate_not_four_of_a_kind(self):
-        for d in not_four_of_a_kind_dice:
-            self.category.dice = d
-            self.assertEqual(self.category.evaluate(), 0)
+    @parameterized.expand((str(test_dice), test_dice, 0) for test_dice in not_four_of_a_kind_dice)
+    def test_evaluate_not_four_of_a_kind(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(self.category.evaluate(), expected_score)
 
 
 class TestKniffel(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.category = Kniffel(7, "Kniffel")
 
-    def test_evaluate(self):
-        for d in kniffel_dice:
-            self.category.dice = d
-            self.assertEqual(self.category.evaluate(), 50)
+    @parameterized.expand((str(test_dice), test_dice, 50) for test_dice in kniffel_dice)
+    def test_evaluate(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(self.category.evaluate(), expected_score)
 
-    def test_evaluate_not_kniffel(self):
-        for d in not_kniffel_dice:
-            self.category.dice = d
-            self.assertEqual(self.category.evaluate(), 0)
+    @parameterized.expand((str(test_dice), test_dice, 0) for test_dice in not_kniffel_dice)
+    def test_evaluate_not_kniffel(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(self.category.evaluate(), expected_score)
