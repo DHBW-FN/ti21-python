@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from parameterized import parameterized
 
-from kniffel.game import Dice
+from kniffel.models.dice import Dice
 
 
 class TestDice(TestCase):
