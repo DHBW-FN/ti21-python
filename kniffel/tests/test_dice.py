@@ -15,27 +15,14 @@ class TestDice(TestCase):
 
     @parameterized.expand([
         ("five_fives", Dice(values=[5, 5, 5, 5, 5]), 5, 5),
-        ("one_ones", Dice(values=[1, 2, 3, 4, 5]), 1, 1)
+        ("one_ones", Dice(values=[1, 2, 3, 4, 5]), 1, 1),
+        ("zero_sixes", Dice(values=[1, 2, 3, 4, 5]), 6, 0),
+        ("three_fours", Dice(values=[4, 4, 4, 5, 5]), 4, 3),
+        ("two_fives", Dice(values=[4, 4, 4, 5, 5]), 4, 3)
     ])
     def test_count(self, _name, test_dice, number_to_count, expected_value):
         self.dice = test_dice
         self.assertEqual(expected_value, self.dice.count(number_to_count))
-
-    def test_count_3(self):
-        for i in range(5):
-            self.dice.dice[i].value = i
-        self.assertEqual(self.dice.count(6), 0)
-
-    def test_count_4(self):
-        self.dice.dice[0].value = 4
-        self.dice.dice[1].value = 4
-        self.dice.dice[2].value = 4
-        self.assertEqual(self.dice.count(4), 3)
-
-    def test_count_5(self):
-        self.dice.dice[3].value = 5
-        self.dice.dice[4].value = 5
-        self.assertEqual(self.dice.count(5), 2)
 
     def test_includes_1(self):
         self.assertEqual(self.dice.includes(0), True)
