@@ -2,7 +2,7 @@
 # pylint: disable=protected-access
 from unittest import TestCase
 
-from kniffel.game import Die
+from kniffel.models.die import Die
 
 
 class TestDie(TestCase):
