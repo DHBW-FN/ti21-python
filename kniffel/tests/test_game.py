@@ -31,8 +31,13 @@ class TestGame(TestCase):
             self.game.process_command("fake input")
             self.assertEqual(fake_out.getvalue(), "Unknown command: fake\n")
 
-    # def test_process_command_roll(self):
-    #     m = MagicMock()
-    #     with patch('kniffel.models.game.Game') as p:
-    #         self.game.process_command("roll")
-    #     p.roll.assert_called()
+    @patch("kniffel.models.game.Game.roll")
+    def test_process_command_roll(self, mock_roll):
+        self.game.process_command("roll")
+        mock_roll.assert_called()
+
+    @patch("kniffel.models.game.Game.save")
+    def test_process_command_save(self, mock_save):
+        self.game.process_command("save 1")
+        mock_save.assert_called()
+
