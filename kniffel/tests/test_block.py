@@ -26,12 +26,13 @@ class TestBlock(TestCase):
         self.block.kniffel_bonus = 50
         self.assertEqual(230, self.block.evaluate())
 
-    # @patch.object(Kniffel, 'evaluate', return_value=50)
-    # @patch.object(Dice, 'count', return_value=5)
-    # def test_submit(self, mock_dice_, mock_kniffel):
-    #     mock_dice = mock.Mock()
-    #     self.block.submit(mock_dice, 5)
-    #     self.assertEqual(50, self.block.kniffel_bonus)
+    @patch.object(Kniffel, 'evaluate', return_value=50)
+    @patch.object(Dice, 'count', return_value=5)
+    def test_submit(self, mock_dice_, mock_kniffel):
+        self.Dice = mock.Mock()
+        self.Dice.count.return_value = 5
+        self.block.submit(self.Dice, 5)
+        self.assertEqual(50, self.block.kniffel_bonus)
 
 
 if __name__ == "__main__":
