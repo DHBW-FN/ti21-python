@@ -121,6 +121,11 @@ class TestFullHouse(TestCase):
         self.category.dice = input_dice
         self.assertEqual(expected_score, self.category.evaluate())
 
+    @parameterized.expand((str(test_dice), test_dice, 0) for test_dice in not_full_house_dice)
+    def test_evaluate_not_full_house(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(expected_score, self.category.evaluate())
+
 
 class TestKniffel(TestCase):
     def setUp(self):
