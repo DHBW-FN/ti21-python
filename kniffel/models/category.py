@@ -107,7 +107,7 @@ class FullHouse(LowerCategory):
         for i in range(1, 7):
             if self.dice.count(i) == 3:
                 for j in range(1, 7):
-                    if self.dice.count(j) == 2 & i != j:
+                    if (self.dice.count(j)) == 2 and (i != j):
                         return 25
         return 0
 
