@@ -34,6 +34,17 @@ class TestBlock(TestCase):
         self.block.submit(self.Dice, 5)
         self.assertEqual(50, self.block.kniffel_bonus)
 
+    # @patch("kniffel.game.Block")
+    # def test_submit2(self, mock_block):
+    #     self.Dice = mock.Mock()
+    #     self.category_index = mock.Mock()
+    #     self.UpperBlock = mock.Mock()
+    #     self.block.submit(self.Dice, 3)
+    #
+    #     mock_block.assert_called()
+    #
+    #     self.UpperBlock.submit.assert_called()
+
 
 if __name__ == "__main__":
     unittest.main()
