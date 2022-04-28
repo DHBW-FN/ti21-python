@@ -1,6 +1,6 @@
 # pylint: disable=C
 # pylint: disable=protected-access
-from collections import Counter
+import json
 from unittest import TestCase
 
 from parameterized import parameterized
@@ -8,110 +8,18 @@ from parameterized import parameterized
 from kniffel.models.category import Kniffel, FourOfAKind, ThreeOfAKind, FullHouse, SmallStraight, LargeStraight, Chance
 from kniffel.models.dice import Dice
 
-# collect all dice
-all_dice = []
-for i in range(1, 7):
-    for j in range(1, 7):
-        for k in range(1, 7):
-            for l in range(1, 7):
-                for m in range(1, 7):
-                    new_dice = Dice(values=[i, j, k, l, m])
-                    all_dice.append(new_dice)
-
-# collect all dice for three of a kind
-three_of_a_kind_dice = []
-for i in range(1, 7):
-    for j in range(1, 7):
-        for k in range(1, 7):
-            for l in range(1, 7):
-                for m in range(1, 7):
-                    c = Counter([i, j, k, l, m])
-                    if max(c.values()) >= 3:
-                        new_dice = Dice(values=[i, j, k, l, m])
-                        three_of_a_kind_dice.append(new_dice)
-not_three_of_a_kind_dice = []
-for dice in all_dice:
-    if dice not in three_of_a_kind_dice:
-        not_three_of_a_kind_dice.append(dice)
-
-# collect all dice for four of a kind
-four_of_a_kind_dice = []
-for i in range(1, 7):
-    for j in range(1, 7):
-        for k in range(1, 7):
-            for l in range(1, 7):
-                for m in range(1, 7):
-                    c = Counter([i, j, k, l, m])
-                    if max(c.values()) >= 4:
-                        new_dice = Dice(values=[i, j, k, l, m])
-                        four_of_a_kind_dice.append(new_dice)
-not_four_of_a_kind_dice = []
-for dice in all_dice:
-    if dice not in four_of_a_kind_dice:
-        not_four_of_a_kind_dice.append(dice)
-
-# collect all dice for a full house
-full_house_dice = []
-for i in range(1, 7):
-    for j in range(1, 7):
-        for k in range(1, 7):
-            for l in range(1, 7):
-                for m in range(1, 7):
-                    c = Counter([i, j, k, l, m])
-                    if max(c.values()) == 3 and min(c.values()) == 2:
-                        new_dice = Dice(values=[i, j, k, l, m])
-                        full_house_dice.append(new_dice)
-not_full_house_dice = []
-for dice in all_dice:
-    if dice not in full_house_dice:
-        not_full_house_dice.append(dice)
-
-# collect all dice for a small straight
-small_straight_dice = []
-for i in range(1, 7):
-    for j in range(1, 7):
-        for k in range(1, 7):
-            for l in range(1, 7):
-                for m in range(1, 7):
-                    c = Counter([i, j, k, l, m])
-                    for x in range(1, 4):
-                        if c[x] >= 1 and c[x + 1] >= 1 and c[x + 2] >= 1 and c[x + 3] >= 1:
-                            new_dice = Dice(values=[i, j, k, l, m])
-                            small_straight_dice.append(new_dice)
-not_small_straight_dice = []
-for dice in all_dice:
-    if dice not in small_straight_dice:
-        not_small_straight_dice.append(dice)
-
-# collect all dice for a large straight
-large_straight_dice = []
-for i in range(1, 7):
-    for j in range(1, 7):
-        for k in range(1, 7):
-            for l in range(1, 7):
-                for m in range(1, 7):
-                    c = Counter([i, j, k, l, m])
-                    for x in range(1, 3):
-                        if c[x] >= 1 and c[x + 1] >= 1 and c[x + 2] >= 1 and c[x + 3] >= 1 and c[x + 4] >= 1:
-                            new_dice = Dice(values=[i, j, k, l, m])
-                            large_straight_dice.append(new_dice)
-not_large_straight_dice = []
-for dice in all_dice:
-    if dice not in large_straight_dice:
-        not_large_straight_dice.append(dice)
-
-# collect all dice for a kniffel
-kniffel_dice = []
-for i in range(1, 7):
-    new_dice = Dice(values=[i, i, i, i, i])
-    kniffel_dice.append(new_dice)
-not_kniffel_dice = []
-for dice in all_dice:
-    if dice not in kniffel_dice:
-        not_kniffel_dice.append(dice)
-
 
 class TestThreeOfAKind(TestCase):
+    three_of_a_kind_dice = []
+    with open('dice/three_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
+        three_of_a_kind_dice_numbers = json.load(dice_file)
+        for dice in three_of_a_kind_dice_numbers:
+            three_of_a_kind_dice.append(Dice(values=dice))
+    not_three_of_a_kind_dice = []
+    with open('dice/not_three_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
+        not_three_of_a_kind_dice_numbers = json.load(dice_file)
+        for dice in not_three_of_a_kind_dice_numbers:
+            not_three_of_a_kind_dice.append(Dice(values=dice))
 
     def setUp(self):
         self.category = ThreeOfAKind(7, "Three of a kind")
@@ -129,6 +37,16 @@ class TestThreeOfAKind(TestCase):
 
 
 class TestFourOfAKind(TestCase):
+    four_of_a_kind_dice = []
+    with open('dice/four_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
+        four_of_a_kind_dice_numbers = json.load(dice_file)
+        for dice in four_of_a_kind_dice_numbers:
+            four_of_a_kind_dice.append(Dice(values=dice))
+    not_four_of_a_kind_dice = []
+    with open('dice/not_four_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
+        not_four_of_a_kind_dice_numbers = json.load(dice_file)
+        for dice in not_four_of_a_kind_dice_numbers:
+            not_four_of_a_kind_dice.append(Dice(values=dice))
 
     def setUp(self) -> None:
         self.category = FourOfAKind(8, "Four of a kind")
@@ -146,6 +64,16 @@ class TestFourOfAKind(TestCase):
 
 
 class TestFullHouse(TestCase):
+    full_house_dice = []
+    with open('dice/full_house_dice.json', 'r', encoding="UTF-8") as dice_file:
+        full_house_dice_numbers = json.load(dice_file)
+        for dice in full_house_dice_numbers:
+            full_house_dice.append(Dice(values=dice))
+    not_full_house_dice = []
+    with open('dice/not_full_house_dice.json', 'r', encoding="UTF-8") as dice_file:
+        not_full_house_dice_numbers = json.load(dice_file)
+        for dice in not_full_house_dice_numbers:
+            not_full_house_dice.append(Dice(values=dice))
 
     def setUp(self):
         self.category = FullHouse(9, "Full house")
@@ -162,6 +90,16 @@ class TestFullHouse(TestCase):
 
 
 class TestSmallStraight(TestCase):
+    small_straight_dice = []
+    with open('dice/small_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
+        small_straight_dice_numbers = json.load(dice_file)
+        for dice in small_straight_dice_numbers:
+            small_straight_dice.append(Dice(values=dice))
+    not_small_straight_dice = []
+    with open('dice/not_small_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
+        not_small_straight_dice_numbers = json.load(dice_file)
+        for dice in not_small_straight_dice_numbers:
+            not_small_straight_dice.append(Dice(values=dice))
 
     def setUp(self):
         self.category = SmallStraight(10, "Small straight")
@@ -178,6 +116,16 @@ class TestSmallStraight(TestCase):
 
 
 class TestLargeStraight(TestCase):
+    large_straight_dice = []
+    with open('dice/large_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
+        large_straight_dice_numbers = json.load(dice_file)
+        for dice in large_straight_dice_numbers:
+            large_straight_dice.append(Dice(values=dice))
+    not_large_straight_dice = []
+    with open('dice/not_large_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
+        not_large_straight_dice_numbers = json.load(dice_file)
+        for dice in not_large_straight_dice_numbers:
+            not_large_straight_dice.append(Dice(values=dice))
 
     def setUp(self):
         self.category = LargeStraight(11, "Large straight")
@@ -194,6 +142,17 @@ class TestLargeStraight(TestCase):
 
 
 class TestKniffel(TestCase):
+    kniffel_dice = []
+    with open('dice/kniffel_dice.json', 'r', encoding="UTF-8") as dice_file:
+        kniffel_dice_numbers = json.load(dice_file)
+        for dice in kniffel_dice_numbers:
+            kniffel_dice.append(Dice(values=dice))
+    not_kniffel_dice = []
+    with open('dice/not_kniffel_dice.json', 'r', encoding="UTF-8") as dice_file:
+        not_kniffel_dice_numbers = json.load(dice_file)
+        for dice in not_kniffel_dice_numbers:
+            not_kniffel_dice.append(Dice(values=dice))
+
     def setUp(self):
         self.category = Kniffel(12, "Kniffel")
 
@@ -209,6 +168,12 @@ class TestKniffel(TestCase):
 
 
 class TestChance(TestCase):
+    all_dice = []
+    with open('dice/all_dice.json', 'r', encoding="UTF-8") as dice_file:
+        all_dice_numbers = json.load(dice_file)
+        for dice in all_dice_numbers:
+            all_dice.append(Dice(values=dice))
+
     def setUp(self):
         self.category = Chance(13, "Chance")
 
