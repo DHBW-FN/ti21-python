@@ -5,7 +5,6 @@ from unittest import mock
 from unittest import TestCase
 from unittest.mock import patch
 
-import kniffel.game
 from kniffel.game import Block, LowerBlock, UpperBlock, Kniffel, Dice
 
 
@@ -34,16 +33,17 @@ class TestBlock(TestCase):
         self.block.submit(self.Dice, 5)
         self.assertEqual(50, self.block.kniffel_bonus)
 
-    # @patch("kniffel.game.Block")
-    # def test_submit2(self, mock_block):
-    #     self.Dice = mock.Mock()
-    #     self.category_index = mock.Mock()
-    #     self.UpperBlock = mock.Mock()
-    #     self.block.submit(self.Dice, 3)
-    #
-    #     mock_block.assert_called()
-    #
-    #     self.UpperBlock.submit.assert_called()
+    @patch('kniffel.game.UpperBlock.submit')
+    def test_upper_submit(self, mock_upper_submit):
+        self.Dice = mock.Mock()
+        self.block.submit(self.Dice, 4)
+        mock_upper_submit.assert_called()
+
+    @patch('kniffel.game.LowerBlock.submit')
+    def test_lower_submit(self, mock_lower_submit):
+        self.Dice = mock.Mock()
+        self.block.submit(self.Dice, 7)
+        mock_lower_submit.assert_called()
 
 
 if __name__ == "__main__":
