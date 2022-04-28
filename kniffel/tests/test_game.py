@@ -106,20 +106,32 @@ class TestGame(TestCase):
         self.game.process_command("3 1")
         mock_submit.assert_called_with(1)
 
-    @patch("kniffel.models.game.show_help")
-    def test_process_command_help(self, mock_help):
-        self.game.process_command("4")
-        mock_help.assert_called()
+    def test_process_command_show_help(self):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.game.process_command("4")
+            self.assertEqual(
+                "Commands:\n"
+                "[0] roll: Roll the dice\n"
+                "[1] save <die_index>: Save the die with the given index[1-5]\n"
+                "[2] un_save <die_index>: Unsave the die with the given index[1-5]\n"
+                "[3] submit <category_index>: Submit the score for the given category\n"
+                "[4] help: Show this help message\n"
+                "[5] score: Show the current game state\n"
+                "[6] dice: Show the current dice state\n"
+                "[7] reset: Reset the game\n"
+                "[9] exit: Exit the game\n"
+                "\n",
+                fake_out.getvalue())
 
-    @patch("kniffel.models.game.Game.show_score")
-    def test_process_command_score(self, mock_show_score):
-        self.game.process_command("5")
-        mock_show_score.assert_called()
+    def test_process_command_score(self):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.game.process_command("5")
+            self.assertIn("Total", fake_out.getvalue())
 
-    @patch("kniffel.models.game.Game.print_dice")
-    def test_process_command_print_dice(self, mock_print_dice):
-        self.game.process_command("6")
-        mock_print_dice.assert_called()
+    def test_process_command_print_dice(self):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.game.process_command("6")
+            self.assertIn("Value", fake_out.getvalue())
 
     @patch("kniffel.models.game.Game.reset")
     def test_process_command_reset(self, mock_reset):
