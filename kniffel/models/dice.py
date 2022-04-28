@@ -23,6 +23,16 @@ class Dice:
     def __str__(self):
         return str([die.value for die in self.dice])
 
+    def __eq__(self, other):
+        if not isinstance(other, Dice):
+            return False
+        if len(self.dice) != len(other.dice):
+            return False
+        for index, obj in enumerate(self.dice):
+            if obj != other.dice[index]:
+                return False
+        return True
+
     def count(self, value: int):
         """
         Count the number of dice with the given value
