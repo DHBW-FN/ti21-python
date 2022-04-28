@@ -11,12 +11,12 @@ from kniffel.models.dice import Dice
 
 class TestThreeOfAKind(TestCase):
     three_of_a_kind_dice = []
-    with open('dice/three_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/three_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
         three_of_a_kind_dice_numbers = json.load(dice_file)
         for dice in three_of_a_kind_dice_numbers:
             three_of_a_kind_dice.append(Dice(values=dice))
     not_three_of_a_kind_dice = []
-    with open('dice/not_three_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/not_three_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
         not_three_of_a_kind_dice_numbers = json.load(dice_file)
         for dice in not_three_of_a_kind_dice_numbers:
             not_three_of_a_kind_dice.append(Dice(values=dice))
@@ -38,12 +38,12 @@ class TestThreeOfAKind(TestCase):
 
 class TestFourOfAKind(TestCase):
     four_of_a_kind_dice = []
-    with open('dice/four_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/four_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
         four_of_a_kind_dice_numbers = json.load(dice_file)
         for dice in four_of_a_kind_dice_numbers:
             four_of_a_kind_dice.append(Dice(values=dice))
     not_four_of_a_kind_dice = []
-    with open('dice/not_four_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/not_four_of_a_kind_dice.json', 'r', encoding="UTF-8") as dice_file:
         not_four_of_a_kind_dice_numbers = json.load(dice_file)
         for dice in not_four_of_a_kind_dice_numbers:
             not_four_of_a_kind_dice.append(Dice(values=dice))
@@ -65,12 +65,12 @@ class TestFourOfAKind(TestCase):
 
 class TestFullHouse(TestCase):
     full_house_dice = []
-    with open('dice/full_house_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/full_house_dice.json', 'r', encoding="UTF-8") as dice_file:
         full_house_dice_numbers = json.load(dice_file)
         for dice in full_house_dice_numbers:
             full_house_dice.append(Dice(values=dice))
     not_full_house_dice = []
-    with open('dice/not_full_house_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/not_full_house_dice.json', 'r', encoding="UTF-8") as dice_file:
         not_full_house_dice_numbers = json.load(dice_file)
         for dice in not_full_house_dice_numbers:
             not_full_house_dice.append(Dice(values=dice))
@@ -91,12 +91,12 @@ class TestFullHouse(TestCase):
 
 class TestSmallStraight(TestCase):
     small_straight_dice = []
-    with open('dice/small_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/small_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
         small_straight_dice_numbers = json.load(dice_file)
         for dice in small_straight_dice_numbers:
             small_straight_dice.append(Dice(values=dice))
     not_small_straight_dice = []
-    with open('dice/not_small_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/not_small_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
         not_small_straight_dice_numbers = json.load(dice_file)
         for dice in not_small_straight_dice_numbers:
             not_small_straight_dice.append(Dice(values=dice))
@@ -117,12 +117,12 @@ class TestSmallStraight(TestCase):
 
 class TestLargeStraight(TestCase):
     large_straight_dice = []
-    with open('dice/large_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/large_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
         large_straight_dice_numbers = json.load(dice_file)
         for dice in large_straight_dice_numbers:
             large_straight_dice.append(Dice(values=dice))
     not_large_straight_dice = []
-    with open('dice/not_large_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/not_large_straight_dice.json', 'r', encoding="UTF-8") as dice_file:
         not_large_straight_dice_numbers = json.load(dice_file)
         for dice in not_large_straight_dice_numbers:
             not_large_straight_dice.append(Dice(values=dice))
@@ -143,12 +143,12 @@ class TestLargeStraight(TestCase):
 
 class TestKniffel(TestCase):
     kniffel_dice = []
-    with open('dice/kniffel_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/kniffel_dice.json', 'r', encoding="UTF-8") as dice_file:
         kniffel_dice_numbers = json.load(dice_file)
         for dice in kniffel_dice_numbers:
             kniffel_dice.append(Dice(values=dice))
     not_kniffel_dice = []
-    with open('dice/not_kniffel_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/not_kniffel_dice.json', 'r', encoding="UTF-8") as dice_file:
         not_kniffel_dice_numbers = json.load(dice_file)
         for dice in not_kniffel_dice_numbers:
             not_kniffel_dice.append(Dice(values=dice))
@@ -169,7 +169,7 @@ class TestKniffel(TestCase):
 
 class TestChance(TestCase):
     all_dice = []
-    with open('dice/all_dice.json', 'r', encoding="UTF-8") as dice_file:
+    with open('kniffel/tests/dice/all_dice.json', 'r', encoding="UTF-8") as dice_file:
         all_dice_numbers = json.load(dice_file)
         for dice in all_dice_numbers:
             all_dice.append(Dice(values=dice))
