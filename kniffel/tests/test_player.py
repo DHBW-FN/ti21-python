@@ -24,7 +24,7 @@ class TestPlayer(TestCase):
         self.player.reset()
         self.assertEqual(self.player.name, "test_player42")
         self.assertNotEqual(self.player.block, old_block)
-        self.assertNotEqual(self.player.dice, old_dice)
+        self.assertIsNot(self.player.dice, old_dice)
         self.assertEqual(self.player.rolls, 0)
         self.assertEqual(self.player.turns, 0)
 
@@ -61,7 +61,7 @@ class TestPlayer(TestCase):
 
         self.player.submit(1)
         mock_submit.assert_called_with(dice_old, 1)
-        self.assertNotEqual(self.player.dice, dice_old)
+        self.assertIsNot(self.player.dice, dice_old)
         self.assertEqual(self.player.rolls, 0)
 
     @patch("kniffel.models.dice.Dice.print")
