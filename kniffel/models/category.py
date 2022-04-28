@@ -122,8 +122,9 @@ class SmallStraight(LowerCategory):
             if self.dice.count(i) >= 1:
                 for j in range(i + 1, i + 4):
                     if self.dice.count(j) == 0:
-                        return 0
-                return 30
+                        break
+                else:
+                    return 30
         return 0
 
 
