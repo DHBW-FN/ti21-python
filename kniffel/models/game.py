@@ -164,56 +164,56 @@ class Game:
         :return:
         """
         my_table = PrettyTable(["Id", "Categories"] + [player.name for player in self.players])
-        my_table.add_row([self.active_player.block.upper.ones.index, "Ones"] +
+        my_table.add_row([self.active_player.block.upper.ones.index, self.active_player.block.upper.ones.name] +
                          [str(player.block.upper.ones.evaluate())
                           if player.block.upper.ones.dice.count(0) == 0
                           else "-" for player in self.players])
-        my_table.add_row([self.active_player.block.upper.twos.index, "Twos"] +
+        my_table.add_row([self.active_player.block.upper.twos.index, self.active_player.block.upper.twos.name] +
                          [str(player.block.upper.twos.evaluate())
                           if player.block.upper.twos.dice.count(0) == 0
                           else "-" for player in self.players])
-        my_table.add_row([self.active_player.block.upper.threes.index, "Threes"] +
+        my_table.add_row([self.active_player.block.upper.threes.index, self.active_player.block.upper.threes.name] +
                          [str(player.block.upper.threes.evaluate())
                           if player.block.upper.threes.dice.count(0) == 0
                           else "-" for player in self.players])
-        my_table.add_row([self.active_player.block.upper.fours.index, "Fours"] +
+        my_table.add_row([self.active_player.block.upper.fours.index, self.active_player.block.upper.fours.name] +
                          [str(player.block.upper.fours.evaluate())
                           if player.block.upper.fours.dice.count(0) == 0
                           else "-" for player in self.players])
-        my_table.add_row([self.active_player.block.upper.fives.index, "Fives"] +
+        my_table.add_row([self.active_player.block.upper.fives.index, self.active_player.block.upper.fives.name] +
                          [str(player.block.upper.fives.evaluate())
                           if player.block.upper.fives.dice.count(0) == 0
                           else "-" for player in self.players])
-        my_table.add_row([self.active_player.block.upper.sixes.index, "Sixes"] +
+        my_table.add_row([self.active_player.block.upper.sixes.index, self.active_player.block.upper.sixes.name] +
                          [str(player.block.upper.sixes.evaluate())
                           if player.block.upper.sixes.dice.count(0) == 0
                           else "-" for player in self.players])
         my_table.add_row(["==", "Total Upper"] + [str(player.block.upper.evaluate()) for player in self.players])
-        my_table.add_row([self.active_player.block.lower.three_of_a_kind.index, "Three of a kind"] +
+        my_table.add_row([self.active_player.block.lower.three_of_a_kind.index, self.active_player.block.lower.three_of_a_kind.name] +
                          [str(player.block.lower.three_of_a_kind.evaluate())
                           if player.block.lower.three_of_a_kind.dice.count(0) == 0
                           else "-" for player in self.players])
-        my_table.add_row([self.active_player.block.lower.four_of_a_kind.index, "Four of a kind"] +
+        my_table.add_row([self.active_player.block.lower.four_of_a_kind.index, self.active_player.block.lower.four_of_a_kind.name] +
                          [str(player.block.lower.four_of_a_kind.evaluate())
                           if player.block.lower.four_of_a_kind.dice.count(0) == 0
                           else "-" for player in self.players])
-        my_table.add_row([self.active_player.block.lower.full_house.index, "Full House"] +
+        my_table.add_row([self.active_player.block.lower.full_house.index, self.active_player.block.lower.full_house.name] +
                          [str(player.block.lower.full_house.evaluate())
                           if player.block.lower.full_house.dice.count(0) == 0
                           else "-" for player in self.players])
-        my_table.add_row([self.active_player.block.lower.small_straight.index, "Small Straight"] +
+        my_table.add_row([self.active_player.block.lower.small_straight.index, self.active_player.block.lower.small_straight.name] +
                          [str(player.block.lower.small_straight.evaluate())
                           if player.block.lower.small_straight.dice.count(0) == 0
                           else "-" for player in self.players])
-        my_table.add_row([self.active_player.block.lower.large_straight.index, "Large Straight"] +
+        my_table.add_row([self.active_player.block.lower.large_straight.index, self.active_player.block.lower.large_straight.name] +
                          [str(player.block.lower.large_straight.evaluate())
                           if player.block.lower.large_straight.dice.count(0) == 0
                           else "-" for player in self.players])
-        my_table.add_row([self.active_player.block.lower.kniffel.index, "Kniffel"] +
+        my_table.add_row([self.active_player.block.lower.kniffel.index, self.active_player.block.lower.kniffel.name] +
                          [str(player.block.lower.kniffel.evaluate())
                           if player.block.lower.kniffel.dice.count(0) == 0
                           else "-" for player in self.players])
-        my_table.add_row([self.active_player.block.lower.chance.index, "Chance"] +
+        my_table.add_row([self.active_player.block.lower.chance.index, self.active_player.block.lower.chance.name] +
                          [str(player.block.lower.chance.evaluate())
                           if player.block.lower.chance.dice.count(0) == 0
                           else "-" for player in self.players])
