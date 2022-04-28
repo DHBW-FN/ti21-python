@@ -5,7 +5,7 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from kniffel.models.category import Kniffel, FourOfAKind, ThreeOfAKind, FullHouse
+from kniffel.models.category import Kniffel, FourOfAKind, ThreeOfAKind, FullHouse, SmallStraight, LargeStraight, Chance
 from kniffel.models.dice import Dice
 
 # collect all dice
@@ -65,6 +65,40 @@ not_full_house_dice = []
 for dice in all_dice:
     if dice not in full_house_dice:
         not_full_house_dice.append(dice)
+
+# collect all dice for a small straight
+small_straight_dice = []
+for i in range(1, 7):
+    for j in range(1, 7):
+        for k in range(1, 7):
+            for l in range(1, 7):
+                for m in range(1, 7):
+                    c = Counter([i, j, k, l, m])
+                    for x in range(1, 4):
+                        if c[x] >= 1 and c[x + 1] >= 1 and c[x + 2] >= 1 and c[x + 3] >= 1:
+                            new_dice = Dice(values=[i, j, k, l, m])
+                            small_straight_dice.append(new_dice)
+not_small_straight_dice = []
+for dice in all_dice:
+    if dice not in small_straight_dice:
+        not_small_straight_dice.append(dice)
+
+# collect all dice for a large straight
+large_straight_dice = []
+for i in range(1, 7):
+    for j in range(1, 7):
+        for k in range(1, 7):
+            for l in range(1, 7):
+                for m in range(1, 7):
+                    c = Counter([i, j, k, l, m])
+                    for x in range(1, 3):
+                        if c[x] >= 1 and c[x + 1] >= 1 and c[x + 2] >= 1 and c[x + 3] >= 1 and c[x + 4] >= 1:
+                            new_dice = Dice(values=[i, j, k, l, m])
+                            large_straight_dice.append(new_dice)
+not_large_straight_dice = []
+for dice in all_dice:
+    if dice not in large_straight_dice:
+        not_large_straight_dice.append(dice)
 
 # collect all dice for a kniffel
 kniffel_dice = []
@@ -127,6 +161,38 @@ class TestFullHouse(TestCase):
         self.assertEqual(expected_score, self.category.evaluate())
 
 
+class TestSmallStraight(TestCase):
+
+    def setUp(self):
+        self.category = SmallStraight(10, "Small straight")
+
+    @parameterized.expand((str(test_dice), test_dice, 30) for test_dice in small_straight_dice)
+    def test_evaluate(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(expected_score, self.category.evaluate())
+
+    @parameterized.expand((str(test_dice), test_dice, 0) for test_dice in not_small_straight_dice)
+    def test_evaluate_not_small_straight(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(expected_score, self.category.evaluate())
+
+
+class TestLargeStraight(TestCase):
+
+    def setUp(self):
+        self.category = LargeStraight(11, "Large straight")
+
+    @parameterized.expand((str(test_dice), test_dice, 40) for test_dice in large_straight_dice)
+    def test_evaluate(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(expected_score, self.category.evaluate())
+
+    @parameterized.expand((str(test_dice), test_dice, 0) for test_dice in not_large_straight_dice)
+    def test_evaluate_not_large_straight(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(expected_score, self.category.evaluate())
+
+
 class TestKniffel(TestCase):
     def setUp(self):
         self.category = Kniffel(12, "Kniffel")
@@ -138,5 +204,16 @@ class TestKniffel(TestCase):
 
     @parameterized.expand((str(test_dice), test_dice, 0) for test_dice in not_kniffel_dice)
     def test_evaluate_not_kniffel(self, _name, input_dice, expected_score):
+        self.category.dice = input_dice
+        self.assertEqual(self.category.evaluate(), expected_score)
+
+
+class TestChance(TestCase):
+    def setUp(self):
+        self.category = Chance(13, "Chance")
+
+    @parameterized.expand((str(test_dice), test_dice,
+                           sum(die.value for die in test_dice.dice)) for test_dice in all_dice)
+    def test_evaluate(self, _name, input_dice, expected_score):
         self.category.dice = input_dice
         self.assertEqual(self.category.evaluate(), expected_score)
