@@ -46,11 +46,43 @@ class TestApp(TestCase):
         with open(os.path.join(curr_dir, "test.pkl"), "w", encoding="UTF-8") as file:
             file.write("")
 
-        app.load_game(Path(os.path.join(curr_dir, "test.pkl")))
-        mock_load.assert_called()
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            app.load_game(Path(os.path.join(curr_dir, "test.pkl")))
+            mock_load.assert_called()
+            self.assertIn("Loading game...", fake_out.getvalue())
+            self.assertIn("Game loaded", fake_out.getvalue())
 
     def test_create_game(self):
         game = app.create_game()
         game.save_game()
         game_files = [file for file in os.listdir(Path(__file__).parent.parent.resolve()) if file.endswith(".pkl")]
         self.assertIn("game1.pkl", game_files)
+
+    @patch('kniffel.app.create_game')
+    def test_main_create_game(self, _mock_create_game):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            with patch('sys.stdin', new=StringIO("1\n1\n1\n9")):
+                app.main()
+                self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
+                self.assertIn("Choose number of players:", fake_out.getvalue())
+                self.assertIn("Choose number of AI players:", fake_out.getvalue())
+
+    @patch('kniffel.app.list_saved_games', return_value=["game1.pkl"])
+    @patch('kniffel.app.load_game')
+    def test_main_load_game(self, mock_load_game, mock_list_saved_games):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            with patch('sys.stdin', new=StringIO("2\ngame1\n9")):
+                app.main()
+                self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
+                mock_list_saved_games.assert_called()
+                mock_load_game.assert_called_with(Path("game1.pkl"))
+
+    @patch('kniffel.app.list_saved_games', return_value=["game1.pkl"])
+    @patch('os.remove')
+    def test_main_delete_game(self, mock_remove, _mock_list_saved_games):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            with patch('sys.stdin', new=StringIO("3\ngame1\n9")):
+                app.main()
+                mock_remove.assert_called_with(Path("game1.pkl"))
+                self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
+                self.assertIn("Game deleted", fake_out.getvalue())

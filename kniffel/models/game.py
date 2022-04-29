@@ -272,6 +272,6 @@ class Game:
             case "reset" | "7":
                 self.reset()
             case "exit" | "9":
-                sys.exit(0)
+                self.is_running = False
             case _:
                 print("Unknown command: " + command)

@@ -68,49 +68,57 @@ def main():
     :return:
     """
     print("Welcome to Kniffel!")
+    is_running = True
+    while is_running:
+        print("Available commands:"
+              "\n\t[1] create - Create new game"
+              "\n\t[2] load - Load game"
+              "\n\t[3] delete - Delete game"
+              "\n\t[9] exit - Exit program")
+        command = input("\nEnter command: ")
+        match command:
+            case "create" | "1":
+                print("Choose number of players:")
+                number_of_players = input()
+                print("Choose number of AI players:")
+                number_of_ai = input()
+                try:
+                    game = create_game(int(number_of_players), int(number_of_ai))
+                except ValueError:
+                    print("Invalid input!")
+            case "load" | "2":
+                if len(list_saved_games()) == 0:
+                    print("No games available")
+                    continue
+                print_save_games()
+                print("\nEnter game name:")
+                game_name = input()
+                try:
+                    game = load_game(Path(game_name + ".pkl"))
+                except FileNotFoundError:
+                    print("Game not found!")
+                except pickle.UnpicklingError:
+                    print("Invalid file!")
+            case "delete" | "3":
+                if len(list_saved_games()) == 0:
+                    print("No games available")
+                    continue
+                print_save_games()
+                print("\nEnter game name:")
+                game_name = input()
+                try:
+                    os.remove(Path(game_name + ".pkl"))
+                    print("Game deleted!")
+                except FileNotFoundError:
+                    print("Game not found!")
+                continue
+            case "exit" | "quit" | "q" | "9":
+                is_running = False
+                continue
+            case _:
+                print("Invalid command!")
 
-    print("Available commands:"
-          "\n\t[1] create - Create new game"
-          "\n\t[2] load - Load game"
-          "\n\t[3] delete - Delete game")
-    match input("\nEnter command: "):
-        case "create" | "1":
-            print("Choose number of players:")
-            number_of_players = input()
-            print("Choose number of AI players:")
-            number_of_ai = input()
-            try:
-                game = create_game(int(number_of_players), int(number_of_ai))
-            except ValueError:
-                print("Invalid input!")
-                main()
-        case "load" | "2":
-            if len(list_saved_games()) == 0:
-                print("No games available")
-                main()
-            print_save_games()
-            print("\nEnter game name:")
-            game_name = input()
-            try:
-                game = load_game(Path(game_name + ".pkl"))
-            except FileNotFoundError:
-                print("Game not found!")
-                main()
-            except pickle.UnpicklingError:
-                print("Invalid file!")
-                main()
-        case "delete" | "3":
-            print_save_games()
-            print("\nEnter game name:")
-            game_name = input()
-            try:
-                os.remove(Path(game_name + ".pkl"))
-                print("Game deleted!")
-            except FileNotFoundError:
-                print("Game not found!")
-            main()
-
-    game.play()
+        game.play()
 
 
 if __name__ == "__main__":
