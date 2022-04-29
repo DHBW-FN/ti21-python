@@ -19,7 +19,7 @@ class TestApp(TestCase):
             main()
             expected_text = "Loading game...\nGame loaded!\n"
             self.assertEqual(fake_out.getvalue(), expected_text)
-            mock_play.assert_called()
+        mock_play.assert_called()
 
     @patch('kniffel.models.game.Game.play')
     @patch('kniffel.models.dice.Dice.roll')
@@ -33,4 +33,4 @@ class TestApp(TestCase):
             main()
             expected_text = "Creating new game...\nGame created!\n"
             self.assertEqual(fake_out.getvalue(), expected_text)
-            mock_play.assert_called()
+        mock_play.assert_called()
