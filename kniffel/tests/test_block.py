@@ -15,36 +15,40 @@ class TestBlock(TestCase):
 
     def setUp(self) -> None:
         self.block = Block()
+        self.Dice = mock.Mock()
 
-    @patch.object(UpperBlock, 'evaluate', return_value=100)
-    @patch.object(LowerBlock, 'evaluate', return_value=80)
+    @patch.object(UpperBlock, 'evaluate')
+    @patch.object(LowerBlock, 'evaluate')
     def test_evaluate1(self, mock_lower, mock_upper):
+        mock_lower.return_value = 80
+        mock_upper.return_value = 100
         self.block.kniffel_bonus = 0
         self.assertEqual(180, self.block.evaluate())
 
-    @patch.object(UpperBlock, 'evaluate', return_value=100)
-    @patch.object(LowerBlock, 'evaluate', return_value=80)
+    @patch.object(UpperBlock, 'evaluate')
+    @patch.object(LowerBlock, 'evaluate')
     def test_evaluate2(self, mock_lower, mock_upper):
+        mock_lower.return_value = 80
+        mock_upper.return_value = 100
         self.block.kniffel_bonus = 50
         self.assertEqual(230, self.block.evaluate())
 
-    @patch.object(Kniffel, 'evaluate', return_value=50)
-    @patch.object(Dice, 'count', return_value=5)
-    def test_submit(self, mock_dice_, mock_kniffel):
-        self.Dice = mock.Mock()
+    @patch.object(Kniffel, 'evaluate')
+    @patch.object(Dice, 'count')
+    def test_submit(self, mock_dice, mock_kniffel):
+        mock_dice.return_value = 5
+        mock_kniffel.return_value = 50
         self.Dice.count.return_value = 5
         self.block.submit(self.Dice, 5)
         self.assertEqual(50, self.block.kniffel_bonus)
 
     @patch('kniffel.models.block.UpperBlock.submit')
     def test_upper_submit(self, mock_upper_submit):
-        self.Dice = mock.Mock()
         self.block.submit(self.Dice, 4)
         mock_upper_submit.assert_called()
 
     @patch('kniffel.models.block.LowerBlock.submit')
     def test_lower_submit(self, mock_lower_submit):
-        self.Dice = mock.Mock()
         self.block.submit(self.Dice, 7)
         mock_lower_submit.assert_called()
 
@@ -82,15 +86,15 @@ class TestUpperBlock(TestCase):
         ]
         mock_submit.assert_has_calls(calls=calls)
 
-    @patch('kniffel.models.category.UpperCategory.submit')
-    def test_submit_2(self, mock_submit):
+    def test_submit_2(self):
         # check if the submit method is called n times
         # once for each die
-        call_count = 0
-        for i in range(1, 7):
-            self.upper_block.submit(self.Dice, i)
-            call_count += 1
-        self.assertEqual(6, call_count)
+        with patch('kniffel.models.category.UpperCategory.submit'):
+            call_count = 0
+            for i in range(1, 7):
+                self.upper_block.submit(self.Dice, i)
+                call_count += 1
+            self.assertEqual(6, call_count)
 
     def test_submit_3(self):
         # check if the exception is raised if index out of range
@@ -104,31 +108,52 @@ class TestLowerBlock(TestCase):
         self.Dice = mock.Mock(return_value=None)
 
     @patch('kniffel.models.category.ThreeOfAKind.evaluate', return_value=1)
-    @patch('kniffel.models.category.FourOfAKind.evaluate', return_value=2)
-    @patch('kniffel.models.category.FullHouse.evaluate', return_value=3)
-    @patch('kniffel.models.category.SmallStraight.evaluate', return_value=4)
-    @patch('kniffel.models.category.LargeStraight.evaluate', return_value=5)
-    @patch('kniffel.models.category.Kniffel.evaluate', return_value=6)
-    @patch('kniffel.models.category.Chance.evaluate', return_value=7)
-    def test_evaluate(
-                        self,
-                        mock_three_of_a_kind,
-                        mock_four_of_a_kind,
-                        mock_full_house,
-                        mock_small_straight,
-                        mock_large_straight,
-                        mock_kniffel,
-                        mock_chance
-                      ):
+    def test_eval_three_of_a_kind(self, mock_three_of_a_kind):
         # check if dice values are added together
-        # and if each method is called
-        self.assertEqual(28, self.lower_block.evaluate())
+        # and if method is called
+        self.assertEqual(1, self.lower_block.evaluate())
         mock_three_of_a_kind.assert_called()
+
+    @patch('kniffel.models.category.FourOfAKind.evaluate', return_value=2)
+    def test_eval_four_of_a_kind(self, mock_four_of_a_kind):
+        # check if dice values are added together
+        # and if method is called
+        self.assertEqual(2, self.lower_block.evaluate())
         mock_four_of_a_kind.assert_called()
+
+    @patch('kniffel.models.category.FullHouse.evaluate', return_value=3)
+    def test_eval_full_house(self, mock_full_house):
+        # check if dice values are added together
+        # and if method is called
+        self.assertEqual(3, self.lower_block.evaluate())
         mock_full_house.assert_called()
+
+    @patch('kniffel.models.category.SmallStraight.evaluate', return_value=4)
+    def test_eval_small_straight(self, mock_small_straight):
+        # check if dice values are added together
+        # and if method is called
+        self.assertEqual(4, self.lower_block.evaluate())
         mock_small_straight.assert_called()
+
+    @patch('kniffel.models.category.LargeStraight.evaluate', return_value=5)
+    def test_eval_large_straight(self, mock_large_straight):
+        # check if dice values are added together
+        # and if method is called
+        self.assertEqual(5, self.lower_block.evaluate())
         mock_large_straight.assert_called()
+
+    @patch('kniffel.models.category.Kniffel.evaluate', return_value=6)
+    def test_eval_kniffel(self, mock_kniffel):
+        # check if dice values are added together
+        # and if method is called
+        self.assertEqual(6, self.lower_block.evaluate())
         mock_kniffel.assert_called()
+
+    @patch('kniffel.models.category.Chance.evaluate', return_value=7)
+    def test_eval_chance(self, mock_chance):
+        # check if dice values are added together
+        # and if method is called
+        self.assertEqual(7, self.lower_block.evaluate())
         mock_chance.assert_called()
 
     @patch('kniffel.models.category.LowerCategory.submit')
@@ -142,15 +167,15 @@ class TestLowerBlock(TestCase):
         ]
         mock_submit.assert_has_calls(calls=calls)
 
-    @patch('kniffel.models.category.LowerCategory.submit')
-    def test_submit_2(self, mock_submit):
+    def test_submit_2(self):
         # check if the submit method is called n times
         # once for each die
-        call_count = 0
-        for i in range(7, 14):
-            self.lower_block.submit(self.Dice, i)
-            call_count += 1
-        self.assertEqual(7, call_count)
+        with patch('kniffel.models.category.LowerCategory.submit'):
+            call_count = 0
+            for i in range(7, 14):
+                self.lower_block.submit(self.Dice, i)
+                call_count += 1
+            self.assertEqual(7, call_count)
 
     def test_submit_3(self):
         # check if the exception is raised if index out of range
