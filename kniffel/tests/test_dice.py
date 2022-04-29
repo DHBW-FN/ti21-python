@@ -25,72 +25,72 @@ class TestDice(TestCase):
         self.assertEqual(expected_value, self.dice.count(number_to_count))
 
     def test_includes_1(self):
-        self.assertEqual(self.dice.includes(0), True)
+        self.assertEqual(True, self.dice.includes(0))
 
     def test_includes_2(self):
         for i in range(1, 7, 1):
             self.dice.dice[1].value = i
-            self.assertEqual(self.dice.includes(i), True)
+            self.assertEqual(True, self.dice.includes(i))
 
     def test_includes_3(self):
         for i in range(1, 7, 1):
             for k in range(5):
                 self.dice.dice[k].value = i
-            self.assertEqual(self.dice.includes(i), True)
+            self.assertEqual(True, self.dice.includes(i))
 
     def test_includes_false_1(self):
-        self.assertEqual(self.dice.includes(1), False)
+        self.assertEqual(False, self.dice.includes(1))
 
     def test_includes_false_2(self):
         for i in range(5):
             self.dice.dice[i].value = 1
-        self.assertEqual(self.dice.includes(0), False)
+        self.assertEqual(False, self.dice.includes(0))
 
     def test_roll(self):
         self.dice.roll()
         for i in range(5):
-            self.assertNotEqual(self.dice.dice[i].value, 0)
+            self.assertNotEqual(0, self.dice.dice[i].value)
 
     def test_silent_roll(self):
         with patch('sys.stdout', new=StringIO()) as fake_out:
             self.dice.silent_roll()
             for i in range(5):
-                self.assertNotEqual(self.dice.dice[i].value, 0)
-            self.assertEqual(fake_out.getvalue(), '')
+                self.assertNotEqual(0, self.dice.dice[i].value)
+            self.assertEqual('', fake_out.getvalue())
 
     def test_save_1(self):
         for i in range(5):
-            self.assertEqual(self.dice.dice[i].saved, False)
+            self.assertEqual(False, self.dice.dice[i].saved)
 
     def test_save_2(self):
         self.dice.save([1, 2])
         for i in range(2):
-            self.assertEqual(self.dice.dice[i].saved, True)
+            self.assertEqual(True, self.dice.dice[i].saved)
 
     def test_save_3(self):
         self.dice.save([1, 2])
         for i in range(2, 5):
-            self.assertEqual(self.dice.dice[i].saved, False)
+            self.assertEqual(False, self.dice.dice[i].saved)
 
     def test_save_4(self):
         self.dice.save([1, 2, 3, 4, 5])
         for i in range(5):
-            self.assertEqual(self.dice.dice[i].saved, True)
+            self.assertEqual(True, self.dice.dice[i].saved)
 
     def test_un_save_1(self):
         for i in range(5):
             self.dice.dice[i].saved = True
         self.dice.un_save([1])
-        self.assertEqual(self.dice.dice[0].saved, False)
+        self.assertEqual(False, self.dice.dice[0].saved)
 
     def test_un_save_2(self):
         self.dice.un_save([1, 2, 3, 4, 5])
         for i in range(5):
-            self.assertEqual(self.dice.dice[i].saved, False)
+            self.assertEqual(False, self.dice.dice[i].saved)
 
     def test_is_rolled(self):
         self.dice.roll()
-        self.assertEqual(self.dice.is_rolled(), True)
+        self.assertEqual(True, self.dice.is_rolled())
 
     def test_is_rolled_false(self):
-        self.assertEqual(self.dice.is_rolled(), False)
+        self.assertEqual(False, self.dice.is_rolled())
