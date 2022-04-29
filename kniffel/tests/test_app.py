@@ -10,16 +10,17 @@ from kniffel.app import main
 class TestApp(TestCase):
 
     @patch('kniffel.models.game.Game.play')
-    @patch('pathlib.Path.exists')
-    def test_path_exists(self, mock_exists, mock_play):
+    @patch('pickle.load')
+    @patch('pathlib.Path.exists', return_value=True)
+    def test_path_exists(self, _mock_exists, mock_load, _mock_play):
         # check if prints are being executed if path exists
         # check if game.play is called if path exists
-        mock_exists.return_value = True
+
         with patch('sys.stdout', new=StringIO()) as fake_out:
             main()
             expected_text = "Loading game...\nGame loaded!\n"
             self.assertEqual(fake_out.getvalue(), expected_text)
-        mock_play.assert_called()
+        mock_load.assert_called()
 
     @patch('kniffel.models.game.Game.play')
     @patch('kniffel.models.dice.Dice.roll')

@@ -1,6 +1,7 @@
 """
 Modelling and executing Kniffel
 """
+import os
 import pickle
 from pathlib import Path
 
@@ -12,10 +13,10 @@ def main():
     Main function
     :return:
     """
-    file_name = "\\game.pkl"
+    file_name = "game.pkl"
 
     curr_dir = Path(__file__).parent.resolve()
-    game_file = str(curr_dir)+file_name
+    game_file = os.path.join(curr_dir, file_name)
 
     path = Path(game_file)
     if path.exists():
