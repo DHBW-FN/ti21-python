@@ -11,7 +11,7 @@ class TestDie(TestCase):
 
     def test_constructor(self):
         self.die = Die(1, True)
-        self.assertEqual(self.die.value, 1)
+        self.assertEqual(1, self.die.value)
         self.assertTrue(self.die.saved)
 
     def test_all_values_rollable(self):
@@ -26,7 +26,7 @@ class TestDie(TestCase):
     def test_save(self):
         self.die.value = 0
         self.die.save()
-        self.assertEqual(self.die.roll(), 0)
+        self.assertEqual(0, self.die.roll())
 
     def test_un_save(self):
         self.die.saved = True
