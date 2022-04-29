@@ -109,24 +109,13 @@ class TestLowerBlock(TestCase):
     @patch('kniffel.models.category.Chance.evaluate', return_value=7)
     def test_evaluate(
                         self,
-                        mock_three_of_a_kind,
-                        mock_four_of_a_kind,
-                        mock_full_house,
-                        mock_small_straight,
-                        mock_large_straight,
-                        mock_kniffel,
-                        mock_chance
+                        *args
                       ):
         # check if dice values are added together
         # and if each method is called
         self.assertEqual(28, self.lower_block.evaluate())
-        mock_three_of_a_kind.assert_called()
-        mock_four_of_a_kind.assert_called()
-        mock_full_house.assert_called()
-        mock_small_straight.assert_called()
-        mock_large_straight.assert_called()
-        mock_kniffel.assert_called()
-        mock_chance.assert_called()
+        for arg in args:
+            arg.assert_called()
 
     @patch('kniffel.models.category.LowerCategory.submit')
     def test_submit(self, mock_submit):
