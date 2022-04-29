@@ -1,6 +1,5 @@
 # pylint: disable=C
 # pylint: disable=protected-access
-import unittest
 from unittest import mock
 from unittest import TestCase
 from unittest.mock import patch, call
@@ -13,47 +12,43 @@ import kniffel.exceptions
 
 class TestBlock(TestCase):
 
-    def setUp(self) -> None:
+    def setUp(self):
         self.block = Block()
 
     @patch.object(UpperBlock, 'evaluate', return_value=100)
     @patch.object(LowerBlock, 'evaluate', return_value=80)
-    def test_evaluate1(self, mock_lower, mock_upper):
+    def test_evaluate1(self, _mock_lower, _mock_upper):
         self.block.kniffel_bonus = 0
         self.assertEqual(180, self.block.evaluate())
 
     @patch.object(UpperBlock, 'evaluate', return_value=100)
     @patch.object(LowerBlock, 'evaluate', return_value=80)
-    def test_evaluate2(self, mock_lower, mock_upper):
+    def test_evaluate2(self, _mock_lower, _mock_upper):
         self.block.kniffel_bonus = 50
         self.assertEqual(230, self.block.evaluate())
 
     @patch.object(Kniffel, 'evaluate', return_value=50)
-    @patch.object(Dice, 'count', return_value=5)
-    def test_submit(self, mock_dice_, mock_kniffel):
-        self.Dice = mock.Mock()
-        self.Dice.count.return_value = 5
-        self.block.submit(self.Dice, 5)
+    def test_submit(self, _mock_kniffel):
+        self.block.submit(Dice(values=[1, 1, 1, 1, 1]), 1)
         self.assertEqual(50, self.block.kniffel_bonus)
 
     @patch('kniffel.models.block.UpperBlock.submit')
     def test_upper_submit(self, mock_upper_submit):
-        self.Dice = mock.Mock()
-        self.block.submit(self.Dice, 4)
-        mock_upper_submit.assert_called()
+        mock_dice = mock.Mock()
+        self.block.submit(mock_dice, 4)
+        mock_upper_submit.assert_called_with(mock_dice, 4)
 
     @patch('kniffel.models.block.LowerBlock.submit')
     def test_lower_submit(self, mock_lower_submit):
-        self.Dice = mock.Mock()
-        self.block.submit(self.Dice, 7)
-        mock_lower_submit.assert_called()
+        mock_dice = mock.Mock()
+        self.block.submit(mock_dice, 7)
+        mock_lower_submit.assert_called_with(mock_dice, 7)
 
 
 class TestUpperBlock(TestCase):
 
     def setUp(self):
         self.upper_block = UpperBlock()
-        self.Dice = mock.Mock(return_value=None)
 
     @patch('kniffel.models.category.UpperCategory.evaluate', return_value=12)
     def test_evaluate(self, mock_evaluate):
@@ -75,33 +70,35 @@ class TestUpperBlock(TestCase):
     def test_submit(self, mock_submit):
         # check if the submit method is called for every dice
         # with a dice object
+        mock_dice = mock.Mock()
         for i in range(1, 7):
-            self.upper_block.submit(self.Dice, i)
+            self.upper_block.submit(mock_dice, i)
         calls = [
-            call(self.Dice),
+            call(mock_dice),
         ]
         mock_submit.assert_has_calls(calls=calls)
 
     @patch('kniffel.models.category.UpperCategory.submit')
-    def test_submit_2(self, mock_submit):
+    def test_submit_2(self, _mock_submit):
         # check if the submit method is called n times
         # once for each die
+        mock_dice = mock.Mock()
         call_count = 0
         for i in range(1, 7):
-            self.upper_block.submit(self.Dice, i)
+            self.upper_block.submit(mock_dice, i)
             call_count += 1
         self.assertEqual(6, call_count)
 
     def test_submit_3(self):
         # check if the exception is raised if index out of range
-        self.assertRaises(kniffel.exceptions.InvalidIndexError, self.upper_block.submit, self.Dice, 7)
+        mock_dice = mock.Mock()
+        self.assertRaises(kniffel.exceptions.InvalidIndexError, self.upper_block.submit, mock_dice, 7)
 
 
 class TestLowerBlock(TestCase):
 
     def setUp(self):
         self.lower_block = LowerBlock()
-        self.Dice = mock.Mock(return_value=None)
 
     @patch('kniffel.models.category.ThreeOfAKind.evaluate', return_value=1)
     @patch('kniffel.models.category.FourOfAKind.evaluate', return_value=2)
@@ -135,27 +132,26 @@ class TestLowerBlock(TestCase):
     def test_submit(self, mock_submit):
         # check if the submit method is called for every dice
         # with a dice object
+        mock_dice = mock.Mock()
         for i in range(7, 14):
-            self.lower_block.submit(self.Dice, i)
+            self.lower_block.submit(mock_dice, i)
         calls = [
-            call(self.Dice),
+            call(mock_dice),
         ]
         mock_submit.assert_has_calls(calls=calls)
 
     @patch('kniffel.models.category.LowerCategory.submit')
-    def test_submit_2(self, mock_submit):
+    def test_submit_2(self, _mock_submit):
         # check if the submit method is called n times
         # once for each die
+        mock_dice = mock.Mock()
         call_count = 0
         for i in range(7, 14):
-            self.lower_block.submit(self.Dice, i)
+            self.lower_block.submit(mock_dice, i)
             call_count += 1
         self.assertEqual(7, call_count)
 
     def test_submit_3(self):
         # check if the exception is raised if index out of range
-        self.assertRaises(kniffel.exceptions.InvalidIndexError, self.lower_block.submit, self.Dice, 14)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        mock_dice = mock.Mock()
+        self.assertRaises(kniffel.exceptions.InvalidIndexError, self.lower_block.submit, mock_dice, 14)
