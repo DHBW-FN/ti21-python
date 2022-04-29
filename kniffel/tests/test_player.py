@@ -22,17 +22,17 @@ class TestPlayer(TestCase):
         old_block = self.player.block
         old_dice = self.player.dice
         self.player.reset()
-        self.assertEqual(self.player.name, "test_player42")
-        self.assertNotEqual(self.player.block, old_block)
-        self.assertIsNot(self.player.dice, old_dice)
-        self.assertEqual(self.player.rolls, 0)
-        self.assertEqual(self.player.turns, 0)
+        self.assertEqual("test_player42", self.player.name)
+        self.assertNotEqual(old_block, self.player.block)
+        self.assertIsNot(old_dice, self.player.dice)
+        self.assertEqual(0, self.player.rolls)
+        self.assertEqual(0, self.player.turns)
 
     @patch.object(Dice, 'roll')
     def test_roll(self, _mock_dice):
         for i in range(3):
             self.player.roll()
-            self.assertEqual(self.player.rolls, i+1)
+            self.assertEqual(i + 1, self.player.rolls)
         self.assertRaises(InvalidCommandError, self.player.roll)
 
     @patch.object(Dice, 'silent_roll')
@@ -40,9 +40,9 @@ class TestPlayer(TestCase):
         with patch('sys.stdout', new=StringIO()) as fake_out:
             for i in range(3):
                 self.player.silent_roll()
-                self.assertEqual(self.player.rolls, i + 1)
+                self.assertEqual(i + 1, self.player.rolls)
             self.assertRaises(InvalidCommandError, self.player.silent_roll)
-            self.assertEqual(fake_out.getvalue(), "")
+            self.assertEqual("", fake_out.getvalue())
 
     @patch("kniffel.models.dice.Dice.save")
     def test_save(self, mock_save):
@@ -62,7 +62,7 @@ class TestPlayer(TestCase):
         self.player.submit(1)
         mock_submit.assert_called_with(dice_old, 1)
         self.assertIsNot(self.player.dice, dice_old)
-        self.assertEqual(self.player.rolls, 0)
+        self.assertEqual(0, self.player.rolls)
 
     @patch("kniffel.models.dice.Dice.print")
     def test_print_dice(self, mock_print):
