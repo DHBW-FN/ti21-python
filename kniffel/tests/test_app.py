@@ -11,8 +11,9 @@ class TestApp(TestCase):
 
     @patch('kniffel.models.game.Game.play')
     @patch('pickle.load')
+    @patch('builtins.open')
     @patch('pathlib.Path.exists', return_value=True)
-    def test_path_exists(self, _mock_exists, mock_load, _mock_play):
+    def test_path_exists(self, _mock_exists, _mock_open, mock_load, _mock_play):
         # check if prints are being executed if path exists
         # check if game.play is called if path exists
 
