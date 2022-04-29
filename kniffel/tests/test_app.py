@@ -26,3 +26,17 @@ class TestApp(TestCase):
                 main()
                 expected_text = "Creating new game...\nGame created!\n"
                 self.assertEqual(fake_out.getvalue(), expected_text)
+
+    @patch('kniffel.models.game.Game.play')
+    @patch('pathlib.Path.exists')
+    def test_play_called1(self, mock_exists, mock_play):
+        mock_exists.return_value = True
+        main()
+        mock_play.assert_called()
+
+    @patch('kniffel.models.game.Game.play')
+    @patch('pathlib.Path.exists')
+    def test_play_called2(self, mock_exists, mock_play):
+        mock_exists.return_value = False
+        main()
+        mock_play.assert_called()
