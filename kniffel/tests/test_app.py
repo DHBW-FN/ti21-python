@@ -1,38 +1,56 @@
 # pylint: disable=C
 # pylint: disable=protected-access
+import os
+from io import StringIO
+from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
-from io import StringIO
 
-from kniffel.app import main
+from kniffel import app
 
 
 class TestApp(TestCase):
 
-    @patch('kniffel.models.game.Game.play')
-    @patch('pickle.load')
-    @patch('builtins.open')
-    @patch('pathlib.Path.exists', return_value=True)
-    def test_path_exists(self, _mock_exists, _mock_open, mock_load, _mock_play):
-        # check if prints are being executed if path exists
-        # check if game.play is called if path exists
+    def tearDown(self) -> None:
+        curr_dir = Path(__file__).parent.parent.resolve()
+        for file in os.listdir(curr_dir):
+            if file.endswith(".pkl"):
+                print(f"Deleting {file}")
+                os.remove(os.path.join(curr_dir, file))
 
+    def test_list_saved_games(self):
+        # create 2 .pkl files in the current directory
+        curr_dir = Path(__file__).parent.parent.resolve()
+        for i in range(2):
+            with open(os.path.join(curr_dir, f"test_{i}.pkl"), "w", encoding="UTF-8") as file:
+                file.write("")
+        self.assertEqual(2, len(app.list_saved_games()))
+        self.assertEqual("['test_0.pkl', 'test_1.pkl']", str(app.list_saved_games()))
+
+    def test_print_save_games(self):
+        # create 2 .pkl files in the current directory
+        curr_dir = Path(__file__).parent.parent.resolve()
+        for i in range(2):
+            with open(os.path.join(curr_dir, f"test_{i}.pkl"), "w", encoding="UTF-8") as file:
+                file.write("")
         with patch('sys.stdout', new=StringIO()) as fake_out:
-            main()
-            expected_text = "Loading game...\nGame loaded!\n"
-            self.assertEqual(fake_out.getvalue(), expected_text)
+            app.print_save_games()
+            self.assertIn("Available games:", fake_out.getvalue())
+            self.assertIn("test_0", fake_out.getvalue())
+            self.assertIn("test_1", fake_out.getvalue())
+
+    @patch('pickle.load')
+    def test_load_game(self, mock_load):
+        # create 1 .pkl files in the current directory
+        curr_dir = Path(__file__).parent.parent.resolve()
+        with open(os.path.join(curr_dir, "test.pkl"), "w", encoding="UTF-8") as file:
+            file.write("")
+
+        app.load_game(Path(os.path.join(curr_dir, "test.pkl")))
         mock_load.assert_called()
 
-    @patch('kniffel.models.game.Game.play')
-    @patch('kniffel.models.dice.Dice.roll')
-    @patch('pathlib.Path.exists')
-    def test_path_not_exists(self, mock_exists, mock_dice, mock_play):
-        # check if prints are being executed if path doesn't exist
-        # check if game.play is called if path doesn't exist
-        mock_dice.return_value = ""
-        mock_exists.return_value = False
-        with patch('sys.stdout', new=StringIO()) as fake_out:
-            main()
-            expected_text = "Creating new game...\nGame created!\n"
-            self.assertEqual(fake_out.getvalue(), expected_text)
-        mock_play.assert_called()
+    def test_create_game(self):
+        game = app.create_game()
+        game.save_game()
+        game_files = [file for file in os.listdir(Path(__file__).parent.parent.resolve()) if file.endswith(".pkl")]
+        self.assertIn("game1.pkl", game_files)

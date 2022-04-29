@@ -8,7 +8,7 @@ from pathlib import Path
 from kniffel.models.game import Game
 
 
-def list_save_games() -> list[bytes]:
+def list_saved_games() -> list[bytes]:
     """
     List all saved games
     :return:
@@ -27,7 +27,7 @@ def print_save_games():
     :return:
     """
     print("Available games:")
-    for game in list_save_games():
+    for game in list_saved_games():
         # print file name without extension
         print(f"\t{game.split('.')[0]}")
 
@@ -51,6 +51,7 @@ def create_game(player_count: int = 1, ai_count: int = 1) -> Game:
     counter = 1
 
     curr_dir = Path(__file__).parent.resolve()
+    print(curr_dir)
     game_path = os.path.join(curr_dir, f"game{counter}.pkl")
     while Path(game_path).exists():
         counter += 1
@@ -84,7 +85,7 @@ def main():
                 print("Invalid input!")
                 main()
         case "load" | "2":
-            if len(list_save_games()) == 0:
+            if len(list_saved_games()) == 0:
                 print("No games available")
                 main()
             print_save_games()
