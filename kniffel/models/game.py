@@ -47,6 +47,7 @@ class Game:
     """
 
     def __init__(self, number_of_players: int, number_of_ai: int, path: str = "game.pkl"):
+        self.is_running = True
         self.path = path
         self.players = []
         for i in range(number_of_players):
@@ -62,7 +63,7 @@ class Game:
         Play the game
         :return:
         """
-        while True:
+        while self.is_running:
             self.save_game()
 
             if isinstance(self.active_player, AIPlayer):
@@ -271,6 +272,6 @@ class Game:
             case "reset" | "7":
                 self.reset()
             case "exit" | "9":
-                sys.exit(0)
+                self.is_running = False
             case _:
                 print("Unknown command: " + command)
