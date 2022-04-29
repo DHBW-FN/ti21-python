@@ -12,8 +12,12 @@ def main():
     Main function
     :return:
     """
+    file_name = "\\game.pkl"
 
-    path = Path("game.pkl")
+    curr_dir = Path(__file__).parent.resolve()
+    game_file = str(curr_dir)+file_name
+
+    path = Path(game_file)
     if path.exists():
         print("Loading game...")
         with open(path, "rb") as file:
