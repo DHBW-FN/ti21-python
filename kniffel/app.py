@@ -90,12 +90,23 @@ def main():
             print_save_games()
             print("\nEnter game name:")
             game_name = input()
-            game = load_game(Path(game_name + ".pkl"))
+            try:
+                game = load_game(Path(game_name + ".pkl"))
+            except FileNotFoundError:
+                print("Game not found!")
+                main()
+            except pickle.UnpicklingError:
+                print("Invalid file!")
+                main()
         case "delete" | "3":
             print_save_games()
             print("\nEnter game name:")
             game_name = input()
-            Path(game_name + ".pkl").unlink()
+            try:
+                os.remove(Path(game_name + ".pkl"))
+                print("Game deleted!")
+            except FileNotFoundError:
+                print("Game not found!")
             main()
 
     game.play()

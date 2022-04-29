@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 /.idea/
-/kniffel/game*.pkl
+/kniffel/*.pkl
