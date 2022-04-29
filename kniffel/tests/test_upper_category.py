@@ -16,11 +16,11 @@ class TestUpperCategory(TestCase):
 
     def test_submit(self):
         self.category.submit(self.dummy_dice)
-        self.assertEqual(self.category.dice, self.dummy_dice)
+        self.assertEqual(self.dummy_dice, self.category.dice)
 
     def test_evaluate(self):
         self.category.dice = self.dummy_dice
-        self.assertEqual(self.category.evaluate(), 1)
+        self.assertEqual(1, self.category.evaluate())
 
     def test_test_evaluate(self):
-        self.assertEqual(self.category.test_evaluate(self.dummy_dice), 1)
+        self.assertEqual(1, self.category.test_evaluate(self.dummy_dice))

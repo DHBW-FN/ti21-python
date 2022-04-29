@@ -28,7 +28,7 @@ class TestThreeOfAKind(TestCase):
                           for test_dice in three_of_a_kind_dice)
     def test_evaluate(self, _name, input_dice, expected_score):
         self.category.dice = input_dice
-        self.assertEqual(self.category.evaluate(), expected_score)
+        self.assertEqual(expected_score, self.category.evaluate())
 
     @parameterized.expand((str(test_dice), test_dice, 0) for test_dice in not_three_of_a_kind_dice)
     def test_evaluate_not_three_of_a_kind(self, _name, input_dice, expected_score):
@@ -55,12 +55,12 @@ class TestFourOfAKind(TestCase):
                           for test_dice in four_of_a_kind_dice)
     def test_evaluate(self, _name, input_dice, expected_score):
         self.category.dice = input_dice
-        self.assertEqual(self.category.evaluate(), expected_score)
+        self.assertEqual(expected_score, self.category.evaluate())
 
     @parameterized.expand((str(test_dice), test_dice, 0) for test_dice in not_four_of_a_kind_dice)
     def test_evaluate_not_four_of_a_kind(self, _name, input_dice, expected_score):
         self.category.dice = input_dice
-        self.assertEqual(self.category.evaluate(), expected_score)
+        self.assertEqual(expected_score, self.category.evaluate())
 
 
 class TestFullHouse(TestCase):
@@ -159,12 +159,12 @@ class TestKniffel(TestCase):
     @parameterized.expand((str(test_dice), test_dice, 50) for test_dice in kniffel_dice)
     def test_evaluate(self, _name, input_dice, expected_score):
         self.category.dice = input_dice
-        self.assertEqual(self.category.evaluate(), expected_score)
+        self.assertEqual(expected_score, self.category.evaluate())
 
     @parameterized.expand((str(test_dice), test_dice, 0) for test_dice in not_kniffel_dice)
     def test_evaluate_not_kniffel(self, _name, input_dice, expected_score):
         self.category.dice = input_dice
-        self.assertEqual(self.category.evaluate(), expected_score)
+        self.assertEqual(expected_score, self.category.evaluate())
 
 
 class TestChance(TestCase):
@@ -181,4 +181,4 @@ class TestChance(TestCase):
                            sum(die.value for die in test_dice.dice)) for test_dice in all_dice)
     def test_evaluate(self, _name, input_dice, expected_score):
         self.category.dice = input_dice
-        self.assertEqual(self.category.evaluate(), expected_score)
+        self.assertEqual(expected_score, self.category.evaluate())
