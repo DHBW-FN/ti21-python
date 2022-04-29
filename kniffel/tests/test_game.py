@@ -129,4 +129,4 @@ class TestGame(TestCase):
     def test_process_command_wrong_command(self):
         with patch('sys.stdout', new=StringIO()) as fake_out:
             self.game.process_command("fake input")
-            self.assertEqual(fake_out.getvalue(), "Unknown command: fake\n")
+            self.assertEqual("Unknown command: fake\n", fake_out.getvalue())
