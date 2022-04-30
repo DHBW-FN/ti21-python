@@ -73,6 +73,7 @@ class TestApp(TestCase):
         with patch('sys.stdout', new=StringIO()) as fake_out:
             with patch('sys.stdin', new=StringIO("1\ns\nd\n9")):
                 app.main()
+                self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
                 self.assertIn("Invalid input!", fake_out.getvalue())
 
     @patch('kniffel.app.list_saved_games', return_value=["game1.pkl"])
@@ -91,6 +92,7 @@ class TestApp(TestCase):
         with patch('sys.stdout', new=StringIO()) as fake_out:
             with patch('sys.stdin', new=StringIO("2\nnew_game\n9")):
                 app.main()
+                self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
                 self.assertIn("Game not found!", fake_out.getvalue())
 
     @patch('kniffel.app.list_saved_games', return_value=[])
@@ -99,6 +101,7 @@ class TestApp(TestCase):
         with patch('sys.stdout', new=StringIO()) as fake_out:
             with patch('sys.stdin', new=StringIO("2\n9")):
                 app.main()
+                self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
                 self.assertIn("No games available", fake_out.getvalue())
 
     @patch('kniffel.app.list_saved_games', return_value=["game1.pkl"])
@@ -128,3 +131,10 @@ class TestApp(TestCase):
                 app.main()
                 self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
                 self.assertIn("Game not found!", fake_out.getvalue())
+
+    def test_main_invalid_command(self):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            with patch('sys.stdin', new=StringIO("42\n9")):
+                app.main()
+                self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
+                self.assertIn("Invalid command!", fake_out.getvalue())
