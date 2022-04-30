@@ -14,7 +14,7 @@ class Category:
 
     def __init__(self, index: int, name: str):
         self.name = name
-        self.dice = Dice()
+        self.dice: Dice = Dice()
         self.index = index
 
     def submit(self, dice: Dice):

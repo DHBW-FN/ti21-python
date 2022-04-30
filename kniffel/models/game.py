@@ -49,12 +49,12 @@ class Game:
     def __init__(self, number_of_players: int, number_of_ai: int, path: str = "game.pkl"):
         self.is_running = True
         self.path = path
-        self.players = []
+        self.players: list[Player] = []
         for i in range(number_of_players):
             self.players.append(Player("Player " + str(i + 1)))
         for i in range(number_of_ai):
             self.players.append(AIPlayer("AI " + str(i + 1)))
-        self.active_player = self.players[0]
+        self.active_player: Player = self.players[0]
         self.active_player.turns += 1
         self.active_player.roll()
 
