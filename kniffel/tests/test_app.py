@@ -59,7 +59,7 @@ class TestApp(TestCase):
         self.assertIn("game1.pkl", game_files)
 
     @patch('kniffel.app.create_game')
-    def test_main_create_game(self, _mock_create_game):
+    def test_main_create_game1(self, _mock_create_game):
         with patch('sys.stdout', new=StringIO()) as fake_out:
             with patch('sys.stdin', new=StringIO("1\n1\n1\n9")):
                 app.main()
@@ -69,6 +69,7 @@ class TestApp(TestCase):
 
     @patch('kniffel.app.create_game')
     def test_main_create_game2(self, _mock_create_game):
+        # test value error for inputs
         with patch('sys.stdout', new=StringIO()) as fake_out:
             with patch('sys.stdin', new=StringIO("1\ns\nd\n9")):
                 app.main()
@@ -76,7 +77,7 @@ class TestApp(TestCase):
 
     @patch('kniffel.app.list_saved_games', return_value=["game1.pkl"])
     @patch('kniffel.app.load_game')
-    def test_main_load_game(self, mock_load_game, mock_list_saved_games):
+    def test_main_load_game1(self, mock_load_game, mock_list_saved_games):
         with patch('sys.stdout', new=StringIO()) as fake_out:
             with patch('sys.stdin', new=StringIO("2\ngame1\n9")):
                 app.main()
@@ -86,6 +87,7 @@ class TestApp(TestCase):
 
     @patch('kniffel.app.list_saved_games', return_value=["game1.pkl"])
     def test_main_load_game2(self, _mock_list_saved_games):
+        # test file not found error
         with patch('sys.stdout', new=StringIO()) as fake_out:
             with patch('sys.stdin', new=StringIO("2\nnew_game\n9")):
                 app.main()
@@ -93,6 +95,7 @@ class TestApp(TestCase):
 
     @patch('kniffel.app.list_saved_games', return_value=[])
     def test_main_load_game3(self, _mock_list_saved_games):
+        # test no save games available
         with patch('sys.stdout', new=StringIO()) as fake_out:
             with patch('sys.stdin', new=StringIO("2\n9")):
                 app.main()
