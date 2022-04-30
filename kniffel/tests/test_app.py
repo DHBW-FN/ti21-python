@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 
-from kniffel import app
+from kniffel import app, exceptions
 
 
 class TestApp(TestCase):
@@ -66,6 +66,13 @@ class TestApp(TestCase):
                 self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
                 self.assertIn("Choose number of players:", fake_out.getvalue())
                 self.assertIn("Choose number of AI players:", fake_out.getvalue())
+
+    @patch('kniffel.app.create_game')
+    def test_main_create_game2(self, _mock_create_game):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            with patch('sys.stdin', new=StringIO("1\ns\nd\n9")):
+                app.main()
+                self.assertIn("Invalid input!", fake_out.getvalue())
 
     @patch('kniffel.app.list_saved_games', return_value=["game1.pkl"])
     @patch('kniffel.app.load_game')
