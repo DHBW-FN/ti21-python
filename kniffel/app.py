@@ -67,8 +67,10 @@ def main():
     Main function
     :return:
     """
+
     print("Welcome to Kniffel!")
     is_running = True
+    game = None
     while is_running:
         print("Available commands:"
               "\n\t[1] create - Create new game"
@@ -111,13 +113,13 @@ def main():
                     print("Game deleted!")
                 except FileNotFoundError:
                     print("Game not found!")
-                continue
             case "exit" | "quit" | "q" | "9":
                 is_running = False
-                continue
             case _:
                 print("Invalid command!")
 
+        if game is None:
+            continue
         game.play()
 
 
