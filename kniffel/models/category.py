@@ -1,6 +1,8 @@
 """
 This file contains the Category classes
 """
+from abc import abstractmethod, ABCMeta
+
 from kniffel.exceptions import CategoryAlreadyFilledError
 from kniffel.models.dice import Dice
 
@@ -26,12 +28,12 @@ class Category:
         self.dice = dice
         print("Submitted " + str(dice) + " to " + self.name + " for a score of " + str(self.evaluate()))
 
+    @abstractmethod
     def evaluate(self):
         """
         Evaluate the category return the score
         :return:
         """
-        raise NotImplementedError()
 
     def test_evaluate(self, dice: Dice):
         """
@@ -59,13 +61,10 @@ class UpperCategory(Category):
         return self.category_value * self.dice.count(self.category_value)
 
 
-class LowerCategory(Category):
+class LowerCategory(Category, metaclass=ABCMeta):
     """
     Class for modelling a lower category
     """
-
-    def evaluate(self):
-        raise NotImplementedError()
 
 
 class ThreeOfAKind(LowerCategory):
