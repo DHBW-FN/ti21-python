@@ -14,8 +14,8 @@ class Player:
 
     def __init__(self, name: str):
         self.name = name
-        self.block = Block()
-        self.dice = Dice()
+        self.block: Block = Block()
+        self.dice: Dice = Dice()
         self.rolls = 0
         self.turns = 0
 

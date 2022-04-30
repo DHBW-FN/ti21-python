@@ -13,9 +13,9 @@ class Block:
     """
 
     def __init__(self):
-        self.upper = UpperBlock()
-        self.lower = LowerBlock()
-        self.kniffel_bonus = 0
+        self.upper: UpperBlock = UpperBlock()
+        self.lower: LowerBlock = LowerBlock()
+        self.kniffel_bonus: int = 0
 
     def evaluate(self):
         """
@@ -47,12 +47,12 @@ class UpperBlock:
     """
 
     def __init__(self):
-        self.ones = UpperCategory(1, "Ones", 1)
-        self.twos = UpperCategory(2, "Twos", 2)
-        self.threes = UpperCategory(3, "Threes", 3)
-        self.fours = UpperCategory(4, "Fours", 4)
-        self.fives = UpperCategory(5, "Fives", 5)
-        self.sixes = UpperCategory(6, "Sixes", 6)
+        self.ones: UpperCategory = UpperCategory(1, "Ones", 1)
+        self.twos: UpperCategory = UpperCategory(2, "Twos", 2)
+        self.threes: UpperCategory = UpperCategory(3, "Threes", 3)
+        self.fours: UpperCategory = UpperCategory(4, "Fours", 4)
+        self.fives: UpperCategory = UpperCategory(5, "Fives", 5)
+        self.sixes: UpperCategory = UpperCategory(6, "Sixes", 6)
 
     def evaluate(self):
         """
@@ -99,13 +99,13 @@ class LowerBlock:
     """
 
     def __init__(self):
-        self.three_of_a_kind = ThreeOfAKind(7, "Three of a kind")
-        self.four_of_a_kind = FourOfAKind(8, "Four of a kind")
-        self.full_house = FullHouse(9, "Full house")
-        self.small_straight = SmallStraight(10, "Small straight")
-        self.large_straight = LargeStraight(11, "Large straight")
-        self.kniffel = Kniffel(12, "Kniffel")
-        self.chance = Chance(13, "Chance")
+        self.three_of_a_kind: ThreeOfAKind = ThreeOfAKind(7, "Three of a kind")
+        self.four_of_a_kind: FourOfAKind = FourOfAKind(8, "Four of a kind")
+        self.full_house: FullHouse = FullHouse(9, "Full house")
+        self.small_straight: SmallStraight = SmallStraight(10, "Small straight")
+        self.large_straight: LargeStraight = LargeStraight(11, "Large straight")
+        self.kniffel: Kniffel = Kniffel(12, "Kniffel")
+        self.chance: Chance = Chance(13, "Chance")
 
     def evaluate(self):
         """

@@ -13,7 +13,7 @@ class Dice:
     """
 
     def __init__(self, amount: int = 5, values: list[int] = None):
-        self.dice = [Die() for _ in range(amount)]
+        self.dice: list[Die] = [Die() for _ in range(amount)]
         if values is not None:
             if len(values) != amount:
                 raise InvalidArgumentError()
