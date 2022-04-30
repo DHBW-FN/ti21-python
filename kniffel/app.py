@@ -8,7 +8,7 @@ from pathlib import Path
 from kniffel.models.game import Game
 
 
-def list_saved_games() -> list[bytes]:
+def list_saved_games() -> list[str]:
     """
     List all saved games
     :return:
@@ -17,7 +17,7 @@ def list_saved_games() -> list[bytes]:
     curr_dir = Path(__file__).parent.resolve()
     for file in os.listdir(curr_dir):
         if file.endswith(".pkl"):
-            save_games.append(file)
+            save_games.append(str(file))
     return save_games
 
 
