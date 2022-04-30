@@ -2,8 +2,8 @@
 This file contains the Block class
 """
 from kniffel.exceptions import InvalidIndexError
-from kniffel.models.category import ThreeOfAKind, FourOfAKind, FullHouse, SmallStraight, LargeStraight, Kniffel,\
-    Chance, Category, UpperCategory
+from kniffel.models.category import ThreeOfAKind, FourOfAKind, FullHouse, SmallStraight, LargeStraight, Kniffel, \
+    Chance, UpperCategory, LowerCategory
 from kniffel.models.dice import Dice
 
 
@@ -116,7 +116,7 @@ class LowerBlock:
         for value in vars(self).items():
             if len(value) > 1:
                 value = value[1]
-            if isinstance(value, Category):
+            if isinstance(value, LowerCategory):
                 total += value.evaluate()
         return total
 
