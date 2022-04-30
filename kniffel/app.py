@@ -8,7 +8,7 @@ from pathlib import Path
 from kniffel.models.game import Game
 
 
-def list_saved_games() -> list[bytes]:
+def list_saved_games() -> list[str]:
     """
     List all saved games
     :return:
