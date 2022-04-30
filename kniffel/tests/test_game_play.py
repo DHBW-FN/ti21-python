@@ -1,22 +1,14 @@
 # pylint: disable=C
 # pylint: disable=protected-access
-import os.path
-from unittest import TestCase
 from io import StringIO
 from unittest.mock import patch
 
 from parameterized import parameterized
 
-from kniffel.models.game import Game
+from kniffel.tests.test_game import TestGame
 
 
-class TestGame(TestCase):
-    def setUp(self):
-        self.game = Game(1, 1)
-
-    def tearDown(self):
-        if os.path.exists("game.pkl"):
-            os.remove("game.pkl")
+class TestGamePlay(TestGame):
 
     def test_play(self):
         with patch('sys.stdout', new=StringIO()) as fake_out:
