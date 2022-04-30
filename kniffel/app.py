@@ -70,6 +70,7 @@ def main():
 
     print("Welcome to Kniffel!")
     is_running = True
+    game = None
     while is_running:
         print("Available commands:"
               "\n\t[1] create - Create new game"
@@ -87,7 +88,6 @@ def main():
                     game = create_game(int(number_of_players), int(number_of_ai))
                 except ValueError:
                     print("Invalid input!")
-                    continue
             case "load" | "2":
                 if len(list_saved_games()) == 0:
                     print("No games available")
@@ -99,10 +99,8 @@ def main():
                     game = load_game(Path(game_name + ".pkl"))
                 except FileNotFoundError:
                     print("Game not found!")
-                    continue
                 except pickle.UnpicklingError:
                     print("Invalid file!")
-                    continue
             case "delete" | "3":
                 if len(list_saved_games()) == 0:
                     print("No games available")
@@ -115,14 +113,13 @@ def main():
                     print("Game deleted!")
                 except FileNotFoundError:
                     print("Game not found!")
-                continue
             case "exit" | "quit" | "q" | "9":
                 is_running = False
-                continue
             case _:
                 print("Invalid command!")
-                continue
 
+        if game is None:
+            continue
         game.play()
 
 
