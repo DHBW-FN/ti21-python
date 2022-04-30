@@ -103,10 +103,28 @@ class TestApp(TestCase):
 
     @patch('kniffel.app.list_saved_games', return_value=["game1.pkl"])
     @patch('os.remove')
-    def test_main_delete_game(self, mock_remove, _mock_list_saved_games):
+    def test_main_delete_game1(self, mock_remove, _mock_list_saved_games):
         with patch('sys.stdout', new=StringIO()) as fake_out:
             with patch('sys.stdin', new=StringIO("3\ngame1\n9")):
                 app.main()
                 mock_remove.assert_called_with(Path("game1.pkl"))
                 self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
                 self.assertIn("Game deleted", fake_out.getvalue())
+
+    @patch('kniffel.app.list_saved_games', return_value=[])
+    def test_main_delete_game2(self, _mock_list_saved_games):
+        # test no save games available
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            with patch('sys.stdin', new=StringIO("3\n9")):
+                app.main()
+                self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
+                self.assertIn("No games available", fake_out.getvalue())
+
+    @patch('kniffel.app.list_saved_games', return_value=["game1.pkl"])
+    def test_main_delete_game3(self, _mock_list_saved_games):
+        # test file not found error
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            with patch('sys.stdin', new=StringIO("3\ngame5\n9")):
+                app.main()
+                self.assertIn("Welcome to Kniffel!", fake_out.getvalue())
+                self.assertIn("Game not found!", fake_out.getvalue())
