@@ -25,3 +25,9 @@ class InvalidCommandError(Exception):
     """
     Exception for invalid command
     """
+
+
+class CategoryAlreadyFilledError(Exception):
+    """
+    Exception for already filled category
+    """
