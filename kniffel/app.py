@@ -51,7 +51,6 @@ def create_game(player_count: int = 1, ai_count: int = 1) -> Game:
     counter = 1
 
     curr_dir = Path(__file__).parent.resolve()
-    print(curr_dir)
     game_path = os.path.join(curr_dir, f"game{counter}.pkl")
     while Path(game_path).exists():
         counter += 1
