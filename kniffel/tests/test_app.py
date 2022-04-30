@@ -85,6 +85,20 @@ class TestApp(TestCase):
                 mock_load_game.assert_called_with(Path("game1.pkl"))
 
     @patch('kniffel.app.list_saved_games', return_value=["game1.pkl"])
+    def test_main_load_game2(self, _mock_list_saved_games):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            with patch('sys.stdin', new=StringIO("2\nnew_game\n9")):
+                app.main()
+                self.assertIn("Game not found!", fake_out.getvalue())
+
+    @patch('kniffel.app.list_saved_games', return_value=[])
+    def test_main_load_game3(self, _mock_list_saved_games):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            with patch('sys.stdin', new=StringIO("2\n9")):
+                app.main()
+                self.assertIn("No games available", fake_out.getvalue())
+
+    @patch('kniffel.app.list_saved_games', return_value=["game1.pkl"])
     @patch('os.remove')
     def test_main_delete_game(self, mock_remove, _mock_list_saved_games):
         with patch('sys.stdout', new=StringIO()) as fake_out:
