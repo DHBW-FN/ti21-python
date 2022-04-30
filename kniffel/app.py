@@ -96,6 +96,7 @@ def main():
                 game_name = input()
                 try:
                     game = load_game(Path(game_name + ".pkl"))
+                    game.path = Path(game_name + ".pkl")
                 except FileNotFoundError:
                     print("Game not found!")
                 except pickle.UnpicklingError:
